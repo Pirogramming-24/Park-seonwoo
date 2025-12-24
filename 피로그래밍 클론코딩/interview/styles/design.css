@@ -1,0 +1,149 @@
+body { background-color: #000; color: #fff; margin: 0; }
+
+.interview_wrap {
+    max-width: 1400px; 
+    width: 90%;
+    margin: 0 auto;
+    padding: 60px 0; 
+    box-sizing: border-box;
+}
+
+
+.interview_wrap .title {
+    display: flex;
+    justify-content: space-between; 
+    align-items: flex-end;
+    margin-bottom: 40px;
+}
+.interview_wrap .title .empty_box { width: 100px; } 
+.interview_wrap .title h1 { width: 100px; text-align: center; margin: 0; font-size: 2rem; }
+.interview_wrap .title a { 
+    width: 100px; 
+    text-align: right; 
+    color: #fff; 
+    text-decoration: none;
+    font-size: 1.2rem;
+}
+
+
+.interview_wrap .card_list {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); 
+    gap: 20px;
+}
+
+
+.interview_wrap .card {
+    background-color: #1a1a1a; 
+    padding: 20px;
+    border-radius: 15px;
+    transition: 0.3s; 
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 150px; 
+}
+
+.interview_wrap .card .top_area {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.interview_wrap .card .profile {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.interview_wrap .card .img_box {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    overflow: hidden;
+}
+.interview_wrap .card .img_box img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: 0.4s;
+}
+
+
+.interview_wrap .card .text_info h3 {
+    margin: 0 0 5px 0;
+    font-size: 1.1rem;
+}
+.interview_wrap .card .text_info span {
+    display: inline-block;
+    padding: 4px 8px;
+    border-radius: 5px;
+    font-size: 0.8rem;
+    font-weight: bold;
+}
+.interview_wrap .card .text_info .badge_blue {
+    background-color: #2563eb; 
+}
+.interview_wrap .card .text_info .badge_red {
+    background-color: #ef4444; 
+}
+
+.interview_wrap .card .desc {
+    color: #ccc;
+    font-size: 0.9rem;
+    margin: 0;
+}
+
+
+.interview_wrap .card .hamburger {
+    width: 25px;
+    height: 18px;
+    display: flex;
+    flex-flow: column nowrap;
+    justify-content: space-between;
+    transition: 0.3s;
+}
+.interview_wrap .card .hamburger span {
+    display: block;
+    width: 100%;
+    height: 2px;
+    background-color: #888;
+    transition: 0.3s;
+}
+
+
+.interview_wrap .card:hover {
+    transform: translateY(-2px); 
+    background-color: #222; 
+}
+
+
+.interview_wrap .card:hover .img_box img {
+    transform: scale(1.1);
+}
+
+
+.interview_wrap .card:hover .hamburger span:nth-child(1) {
+    width: 50%;
+   
+}
+.interview_wrap .card:hover .hamburger span:nth-child(2) {
+    width: 100%;
+}
+.interview_wrap .card:hover .hamburger span:nth-child(3) {
+    width: 50%;
+    align-self: flex-end;
+}
+
+
+@media (max-width: 1024px) {
+    .interview_wrap .card_list {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 600px) {
+    .interview_wrap .card_list {
+        grid-template-columns: repeat(1, 1fr);
+    }
+}
