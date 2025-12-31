@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block content%}
+  <h1>{{ review.title }} 상세리뷰</h1>
+  <hr>
+    <ul>
+        <li>개봉년도 {{ review.release_year }}년</li>
+        <li>감독 {{ review.director }}</li>
+        <li>주연 {{ review.main_actor }}</li>
+        <li>장르 {{ review.genre }}</li>
+        <li>별점 {{ review.rating }} / 10 </li>
+        <li>러닝타임 {{ review.get_runtime_display }}</li>
+    </ul>
+    
+    <h3>리뷰 내용</h3>
+    <p>{{ review.content }}</p>
+    <hr>
+    <a href="{% url 'reviews:review_list' %}">[목록으로 돌아가기]</a>
+    <hr>
+    <a href="{% url 'reviews:review_update' review.pk %}">[수정하기]</a>
+
+    <form action="{% url 'reviews:review_delete' review.pk %}" method="POST" style="display:inline;">
+        {% csrf_token %}
+        <button type="submit"> [삭제하기] </button>
+    </form> 
+
+{% endblock %}
+
