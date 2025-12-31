@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block content%}
+  <h1>my Movie reviews</h1>
+    <a href="#">Add a New review</a>
+    <hr>
+    {% for review in reviews %}
+        <h2>{{ review.title }}</h2>
+        <ul>
+            <li>감독: {{review.director}}</li>
+            <li>주연: {{review.director}}</li>
+            <li>평점: {{review.director}}</li>
+        </ul>
+
+        <p>{{review.content}}</p>
+        <hr> {% endfor %}
+{% endblock %}
