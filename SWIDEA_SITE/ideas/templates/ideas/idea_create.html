@@ -1,0 +1,38 @@
+{% extends 'ideas/base.html' %} {% block content %}
+<div class="container">
+    <h1>Idea Register</h1>
+    <p>아이디어 등록 페이지 입니다. 당신의 아이디어를 기록하세요.</p>
+    
+    <form action="{% url 'ideas:idea_create' %}" method="POST" enctype="multipart/form-data">
+        {% csrf_token %} <div class="form-group">
+            <label for="title">아이디어 명:</label>
+            <input type="text" id="title" name="title" required>
+        </div>
+
+        <div class="form-group">
+            <label for="image">이미지:</label>
+            <input type="file" id="image" name="image">
+        </div>
+
+        <div class="form-group">
+            <label for="content">아이디어 설명:</label>
+            <input type="content" id="content" name="content">
+        </div>
+        
+        <div class="form-group">
+            <label for="interest">아이디어 관심도:</label>
+            <input type="number" id="interest" name="interest" value="0">
+        </div>
+        
+        <div class="form-group">
+            <label for="devtool">예상 개발툴:</label>
+            <select name="devtool" id="devtool">
+            {% for tool in devtools %}
+                    <option value="{{ tool.pk }}">{{ tool.name }}</option>
+            {% endfor %}
+            </select>
+        </div>
+        <button type="submit">SUBMIT</button>
+    </form>
+</div>
+{% endblock %}

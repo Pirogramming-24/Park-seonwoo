@@ -1,0 +1,14 @@
+{% extends 'ideas/base.html' %}
+
+{% block content %}
+<div class="form-container">
+    <h1>새 개발툴 등록</h1>
+    <form action="" method="POST">
+        {% csrf_token %}
+        <p>이름: <input type="text" name="name" required></p>
+        <p>종류: <input type="text" name="kind" required></p>
+        <p>설명: <textarea name="content" cols="30" rows="5" required></textarea></p><br><button type="submit" class="btn">등록하기</button>
+    </form>
+    <a href="{% url 'ideas:devtool_list' %}">취소</a>
+</div>
+{% endblock %}

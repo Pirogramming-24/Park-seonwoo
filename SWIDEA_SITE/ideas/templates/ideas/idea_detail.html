@@ -1,0 +1,41 @@
+{% extends 'ideas/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="detail-container">
+    <div class="detail-header">
+    <h1>
+        {{ idea.title }}
+        <a href="{% url 'ideas:idea_star_toggle' idea.pk %}" style="text-decoration: none; color: gold;">
+            {% if is_starred %}
+                ★ {% else %}
+                ☆ {% endif %}
+        </a>
+    </h1>
+    <p>아이디어 관심도: {{ idea.interest }}</p>
+    </div>
+    
+
+    <div class="detail-body">
+        {% if idea.image %}
+            <img src="{{ idea.image.url }}" alt="{{ idea.title }}" style="max-width: 100%; height: auto;">
+        {% else %}
+            <img src="{% static 'images/default.png' %}" alt="기본 이미지">
+        {% endif %}
+        
+        <p class= "aa">예상 개발툴: <a href="{% url 'ideas:devtool_detail' idea.devtool.pk %}">
+            {{ idea.devtool.name }}
+        </a>
+        </p>
+        <p class = "idea-desc"><strong>아이디어 설명:</strong></p>
+       <div class="content-text" style="white-space: pre-wrap;">{{ idea.content }}</div>
+    </div>
+
+    <div class="detail-footer">
+        <a href="{% url 'ideas:idea_update' idea.pk %}" class="btn">수정하기</a>
+        <a href="{% url 'ideas:idea_delete' idea.pk %}" class="btn delete-btn" onclick="return confirm('정말 삭제하시겠습니까?')">삭제하기</a>
+        <br>
+        <a href="{% url 'ideas:main' %}">목록으로 돌아가기</a>
+    </div>
+</div>
+{% endblock %}

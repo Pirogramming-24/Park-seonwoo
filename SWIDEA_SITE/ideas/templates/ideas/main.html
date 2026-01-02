@@ -1,0 +1,71 @@
+{% extends 'ideas/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="main-container">
+    <div class="header-text">
+        <h1>Idea List</h1>
+        <form action="" method="GET">
+            <select name="sort" onchange="this.form.submit()">
+                <option value="-id" {% if request.GET.sort == '-id' %}selected{% endif %}>최신순</option>
+                <option value="title" {% if request.GET.sort == 'title' %}selected{% endif %}>이름순</option>
+                <option value="-interest" {% if request.GET.sort == '-interest' %}selected{% endif %}>관심도순</option>
+                <option value="id" {% if request.GET.sort == 'id' %}selected{% endif %}>등록순</option>
+            </select>
+        </form>
+        <p>나의 아이디어를 기록해보세요.</p>
+    </div>
+
+    <div class="card-list">
+        {% for idea in ideas %}
+            <div class="idea-card" style="position: relative; border: 1px solid #ddd; margin: 10px; padding: 10px;">
+                
+                <div class="star-box" style="position: absolute; top: 10px; left: 10px; z-index: 10;">
+                    <a href="{% url 'ideas:idea_star_toggle' idea.pk %}" style="text-decoration: none; font-size: 24px; color: gold;">
+                        {% if idea.ideastar_set.all %}★{% else %}☆{% endif %}
+                    </a>
+                </div>
+
+                <a href="{% url 'ideas:idea_detail' idea.pk %}" style="text-decoration: none; color: inherit;">
+                    <div class="card-img-box">
+                        {% if idea.image %}
+                            <img src="{{ idea.image.url }}" alt="" style="width: 100%; height: 200px; object-fit: cover;">
+                        {% else %}
+                            <img src="{% static 'images/default.png' %}" alt="" style="width: 100%; height: 200px; object-fit: cover;">
+                        {% endif %}
+                    </div>
+                    <div class="card-content">
+                        <h3>{{ idea.title }}</h3>
+                    </div>
+                </a>
+
+                <div class="card-content">
+                    <hr>
+                    <p class="devtool-info">예상 개발툴 : {{ idea.devtool.name }}</p>
+                    
+                    <div class="interest-info">
+                        아이디어 관심도 : 
+                        <button onclick="updateInterest({{ idea.pk }}, 'sub')">-</button>
+                        
+                        <span id="interest-{{ idea.pk }}">{{ idea.interest }}</span>
+                        
+                        <button onclick="updateInterest({{ idea.pk }}, 'add')">+</button>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+
+<script>
+function updateInterest(id, action) {
+    const url = action === 'add' ? `/interest_add/${id}/` : `/interest_sub/${id}/`;
+    
+    fetch(url)
+        .then(response => response.text()) 
+        .then(data => {
+            document.getElementById(`interest-${id}`).innerText = data;
+        });
+}
+</script>
+{% endblock %}
