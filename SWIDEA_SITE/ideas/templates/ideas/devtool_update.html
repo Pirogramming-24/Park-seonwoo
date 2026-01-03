@@ -1,0 +1,15 @@
+{% extends 'ideas/base.html' %}
+
+{% block content %}
+<div class="form-container">
+    <h1>개발툴 정보 수정</h1>
+    <form action="" method="POST">
+        {% csrf_token %}
+        <p>이름: <input type="text" name="name" value="{{ devtool.name }}" required></p>
+        <p>종류: <input type="text" name="kind" value="{{ devtool.kind }}" required></p>
+        <p>설명: <textarea name="content" cols="30" rows="5" required>{{ devtool.content }}</textarea></p>
+        <button type="submit" class="btn">수정 완료</button>
+    </form>
+    <a href="{% url 'ideas:devtool_detail' devtool.pk %}">취소</a>
+</div>
+{% endblock %}

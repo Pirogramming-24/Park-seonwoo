@@ -1,0 +1,32 @@
+{% extends 'ideas/base.html' %}
+
+{% block content %}
+<div class="form-container">
+    <h1>아이디어 수정</h1>
+    <form action="" method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        
+        <p>제목: <input type="text" name="title" value="{{ idea.title }}" required></p>
+        
+        <p>이미지: <input type="file" name="image"></p>
+        <p>현재 이미지: {{ idea.image.name|default:"없음" }}</p>
+        
+        <p>아이디어 설명: <br><textarea name="content" cols="30" rows="10" required>{{ idea.content }}</textarea></p>
+        
+        <p>아이디어 관심도: <input type="number" name="interest" value="{{ idea.interest }}" required></p>
+        
+        <p>예상 개발툴: 
+            <select name="devtool">
+                {% for tool in devtools %}
+                    <option value="{{ tool.id }}" {% if tool == idea.devtool %}selected{% endif %}>
+                        {{ tool.name }}
+                    </option>
+                {% endfor %}
+            </select>
+        </p>
+
+        <button type="submit">수정 완료</button>
+    </form>
+    <a href="{% url 'ideas:idea_detail' idea.pk %}">취소</a>
+</div>
+{% endblock %}
