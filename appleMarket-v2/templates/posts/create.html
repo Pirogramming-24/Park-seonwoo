@@ -1,0 +1,111 @@
+{% extends 'base.html' %}
+{% block head %}
+<title>post_create</title>
+<style>
+  main {
+    height: 100vh;
+  }
+
+  #ocrStatus {
+    margin-top: 8px;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<form action="{% url 'posts:create' %}" method="POST" enctype="multipart/form-data">
+  {% csrf_token %}
+
+  <h3>게시글 정보</h3>
+  {{ post_form.as_p }}
+
+  <p>
+    영양 성분 이미지:
+    <input type="file" id="nutritionImage" accept="image/*">
+    <div id="ocrStatus"></div>
+  </p>
+
+  {{ nutrition_form.as_p }}
+
+  <button class="btn btn-success">등록하기</button>
+</form>
+
+<script>
+  const fileInput = document.getElementById("nutritionImage");
+  // 폼 필드 ID (create.html의 실제 ID와 일치해야 함)
+  const caloriesEl = document.getElementById("id_calories_kcal"); // 보통 id_필드명 입니다.
+  const carbsEl = document.getElementById("id_carbs_g");
+  const proteinEl = document.getElementById("id_protein_g");
+  const fatEl = document.getElementById("id_fat_g");
+
+  function getCsrfToken() {
+    const name = "csrftoken=";
+    const parts = document.cookie.split(";").map(v => v.trim());
+    for (const p of parts) if (p.startsWith(name)) return p.slice(name.length);
+    return "";
+  }
+
+  function setAnalyzingUI(on) {
+    const msg = on ? "분석 중..." : "";
+    const fields = [caloriesEl, carbsEl, proteinEl, fatEl].filter(Boolean);
+
+    fields.forEach(el => {
+      if (on) {
+        el.placeholder = msg;
+        el.value = ""; // 분석 시작하면 기존 값 비움
+        // el.disabled = true; // (선택사항) 분석 중 수정 못하게 막으려면 주석 해제
+      } else {
+        el.placeholder = "";
+        el.disabled = false;
+      }
+    });
+  }
+
+  fileInput?.addEventListener("change", async () => {
+    const file = fileInput.files?.[0];
+    if (!file) return;
+
+    setAnalyzingUI(true); // "분석 중..." 표시
+
+    const fd = new FormData();
+    fd.append("nutrition_image", file); // 뷰에서 받는 이름과 일치
+
+    try {
+      // ★ 1. URL 수정 완료 ('posts:ocr_api')
+      const res = await fetch("{% url 'posts:ocr_api' %}", {
+        method: "POST",
+        headers: { "X-CSRFToken": getCsrfToken() },
+        body: fd
+      });
+
+      const data = await res.json();
+
+      // ★ 2. 데이터 처리 수정 (views.py가 보내주는 형식에 맞춤)
+      // views.py: return JsonResponse({'success': True, 'data': ...})
+      
+      if (!data.success) { // !data.ok 가 아니라 !data.success
+        setAnalyzingUI(false);
+        alert("OCR 실패: " + (data.error || "알 수 없는 오류"));
+        return;
+      }
+
+      // views.py가 보낸 데이터는 data.data 안에 있음
+      const n = data.data || {}; 
+
+      // 값 채우기
+      if (caloriesEl) caloriesEl.value = n.kcal || 0;     // rules.py 키: kcal
+      if (carbsEl) carbsEl.value = n.carbohydrate || 0;   // rules.py 키: carbohydrate
+      if (proteinEl) proteinEl.value = n.protein || 0;    // rules.py 키: protein
+      if (fatEl) fatEl.value = n.fat || 0;                // rules.py 키: fat
+
+      setAnalyzingUI(false); // UI 복구
+      alert("분석 완료! 숫자를 확인해주세요. 🍎");
+
+    } catch (e) {
+      setAnalyzingUI(false);
+      console.error(e);
+      alert("네트워크 오류가 발생했습니다.");
+    }
+  });
+</script>
+{% endblock %}
