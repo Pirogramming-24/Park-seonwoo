@@ -15,26 +15,37 @@
     }
 </style>
 {% endblock%}
-
-
 {% block content %}
 <h1 style="color: green; font-size: 40px">{{post.title}}</h1>
+
 {% if post.photo %}
-<img src="{{post.photo.url}}" alt="제품 이미지" />
+    <img src="{{post.photo.url}}" alt="제품 이미지" />
 {% else %}
-<img src="{% static 'posts/image/no-image.jpg' %}" alt="대체 텍스트" />
+    <img src="{% static 'posts/image/no-image.jpg' %}" alt="대체 텍스트" />
 {% endif %}
 
-<p>작성자: {{post.user}}</p>
+<p>작성자: {{post.user.name}}</p>
 <p>지역: {{post.region}}</p>
 <p>가격: {{post.price}}</p>
+
 <h2 class="my-3">{{post.content}}</h2>
+
+{% if post.nutrition %}
+<div class="card border-success mb-3" style="max-width: 400px;">
+    <div class="card-header bg-success text-white">🍎 AI 영양 성분 분석</div>
+    <div class="card-body">
+        <p class="card-text mb-1"><strong>칼로리:</strong> {{ post.nutrition.calories_kcal }} kcal</p>
+        <p class="card-text mb-1"><strong>탄수화물:</strong> {{ post.nutrition.carbs_g }}g</p>
+        <p class="card-text mb-1"><strong>단백질:</strong> {{ post.nutrition.protein_g }}g</p>
+        <p class="card-text mb-1"><strong>지방:</strong> {{ post.nutrition.fat_g }}g</p>
+    </div>
+</div>
+{% endif %}
 <p>작성일: {{post.created_at}}</p>
 <p>수정일: {{post.updated_at}}</p>
-<p>이 작성자의 글</p>
-
 
 <hr />
 <a href="{% url 'posts:update' post.pk %}" class="btn btn-primary">수정하기</a>
 <a href="{% url 'posts:delete' post.pk %}" class="btn btn-danger">삭제하기</a>
+<a href="/" class="btn btn-secondary">목록으로</a>
 {% endblock content %}

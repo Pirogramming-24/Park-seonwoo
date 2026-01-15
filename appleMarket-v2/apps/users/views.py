@@ -1,6 +1,7 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from .models import User
 from .forms import UserForm
+
 
 # Create your views here.
 def list(request):
@@ -44,3 +45,10 @@ def delete(request, pk):
     user = User.objects.get(id=pk)
     user.delete()
     return redirect('users:list')
+
+def detail(request, pk):
+    user = get_object_or_404(User, pk=pk)
+    context = {
+        'target_user': user
+    }
+    return render(request, 'users/detail.html', context)

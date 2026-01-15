@@ -1,4 +1,4 @@
-hand_landmarker.task
+lshand_landmarker.task
 
 venv/
 db.sqlite3

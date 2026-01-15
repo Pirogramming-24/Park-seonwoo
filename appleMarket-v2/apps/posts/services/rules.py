@@ -39,8 +39,8 @@ def extract_nutrition(ocr_text: str) -> dict:
 
     # 4. 결과 반환 (JS가 기다리는 키 이름 'kcal', 'carbohydrate' 등으로 통일)
     return {
-        "kcal": kcal,
-        "carbohydrate": find_g(["탄수화물", "탄수", "당질", "carb"]),
-        "protein": find_g(["단백질", "단백", "pro"]),
-        "fat": find_g(["지방", "fat"]),
+        "calories_kcal": kcal,      # 모델 필드명과 일치!
+        "carbs_g": find_g(["탄수화물", "탄수", "당질", "carb"]), # 모델 필드명과 일치!
+        "protein_g": find_g(["단백질", "단백", "pro"]),
+        "fat_g": find_g(["지방", "fat"]),
     }

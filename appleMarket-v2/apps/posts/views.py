@@ -1,10 +1,9 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.core.files.storage import default_storage
 import os
 from .models import Post
-from .forms import PostForm
 from .services.ocr_service import extract_nutrition_data
 from .forms import PostForm, NutritionForm
 
@@ -34,40 +33,34 @@ def main(request):
     }
     return render(request, 'posts/list.html', context=context)
 
+# apps/posts/views.py
+
 def create(request):
     if request.method == 'GET':
-        post_form = PostForm()
+        post_form = PostForm()         # 이름 변경: form -> post_form
         nutrition_form = NutritionForm()
-        context = {
-            'form': post_form,
-            'nutrition_form': nutrition_form  # 템플릿으로 보냄
+        
+        context = { 
+            'post_form': post_form,    # ★ HTML에서 이 이름으로 씁니다!
+            'nutrition_form': nutrition_form 
         }
         return render(request, 'posts/create.html', context=context)
     
     else:
-        # POST 요청 시 두 폼 모두 데이터를 채움
-        post_form = PostForm(request.POST, request.FILES)
+        post_form = PostForm(request.POST, request.FILES) # 여기도 post_form
         nutrition_form = NutritionForm(request.POST)
 
-        # 두 폼이 모두 유효한지 검사
         if post_form.is_valid() and nutrition_form.is_valid():
-            # 1. Post 먼저 저장
             post = post_form.save(commit=False)
-            post.user = request.user
             post.save()
 
-            # 2. NutritionInfo 저장 (Post와 연결)
             nutrition = nutrition_form.save(commit=False)
-            nutrition.post = post  # ★ 방금 만든 post와 연결!
+            nutrition.post = post
             nutrition.save()
-
             return redirect('/')
         
-        # 에러 나면 다시 입력 화면으로
-        context = {
-            'form': post_form,
-            'nutrition_form': nutrition_form
-        }
+        # 실패 시 다시 입력창으로
+        context = { 'post_form': post_form, 'nutrition_form': nutrition_form }
         return render(request, 'posts/create.html', context=context)
         
 def detail(request, pk):
