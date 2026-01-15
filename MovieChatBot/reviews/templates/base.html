@@ -1,0 +1,19 @@
+{% load static %} 
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Movie Reviews</title>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+</head>
+<body>
+    <nav>
+        <a href="{% url 'reviews:review_list' %}"><h1>my <strong>Movie</strong> reviews</h1></a>
+        <a href="{% url 'reviews:review_create' %}"><h3><strong>Add</strong> a New review</h3></a>
+    </nav>
+    <hr>
+
+    {% block content %}
+    {% endblock %}
+</body>
+</html>

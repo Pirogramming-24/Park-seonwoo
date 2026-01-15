@@ -1,0 +1,23 @@
+
+{% extends "base.html" %}
+
+{% block content %}
+<div style="margin-bottom: 20px;">
+    <a href="?sort=release">개봉년도순</a> | 
+    <a href="?sort=genre">장르순</a> | 
+    <a href="?sort=rating">평점순</a>
+  </div>
+  <hr>
+
+{% for review in reviews %}
+    <div class>
+        <a href="{% url 'reviews:review_detail' review.pk %}">
+            <h2>{{ review.title }}</h2>
+        </a>
+        <p>개봉: {{ review.release_year }} | 장르: {{ review.genre }} | 평점: {{ review.rating }}</p>
+    </div>
+    <hr>
+{% empty %}
+    <p>등록된 리뷰가 없습니다.</p>
+{% endfor %}
+{% endblock %}
