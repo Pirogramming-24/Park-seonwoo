@@ -11,14 +11,14 @@
         align-items: center;
         padding-top: 20px;
         padding-bottom: 40px;
-        height: calc(100vh - 150px); /* 헤더 높이 제외하고 꽉 차게 */
+        height: calc(100vh - 150px);
     }
 
     /* 채팅창 카드 디자인 */
     .chat-card { 
         width: 400px; 
         height: 600px; 
-        background: #1e1e1e; /* 카드 배경: 다크그레이 */
+        background: #1e1e1e;
         border-radius: 20px; 
         box-shadow: 0 10px 30px rgba(0,0,0,0.5); 
         display: flex; 
@@ -68,7 +68,6 @@
         word-break: keep-all;
     }
 
-    /* 유저: 초록색 */
     .message.user .bubble { 
         background: #00E054; 
         color: #121212; 
@@ -76,7 +75,6 @@
         font-weight: bold;
     }
 
-    /* 봇: 회색 */
     .message.bot .bubble { 
         background: #333; 
         color: white; 
@@ -92,7 +90,7 @@
         gap: 10px;
     }
     .chat-input-area input { 
-        margin: 0; /* base css 초기화 */
+        margin: 0; 
         flex: 1; 
         padding: 10px 15px; 
         background: #121212;
@@ -101,7 +99,7 @@
         color: white;
     }
     .chat-input-area button { 
-        margin: 0; /* base css 초기화 */
+        margin: 0;
         width: auto;
         padding: 10px 20px; 
         background: #00E054; 
@@ -138,10 +136,10 @@
             <div class="message bot">
                 <div class="bubble">안녕하세요! 🎬<br>어떤 영화를 찾고 계신가요?</div>
             </div>
-        </div>
 
-        <div class="loading-dots" id="loading">
-            <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+            <div class="loading-dots" id="loading">
+                <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+            </div>
         </div>
 
         <div class="chat-input-area">
@@ -169,7 +167,6 @@
         chatBox.scrollTop = chatBox.scrollHeight;
 
         try {
-            // 3. API 요청
             const response = await fetch('/api/chat/', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -177,7 +174,7 @@
             });
             const data = await response.json();
 
-            // 4. 답변 표시
+            // 3. 답변 표시
             loading.style.display = 'none';
             if (data.answer) {
                 appendMessage('bot', data.answer);
@@ -193,13 +190,15 @@
 
     function appendMessage(sender, text) {
         const chatBox = document.getElementById('chat-box');
+        const loading = document.getElementById('loading');
+        
         const msgDiv = document.createElement('div');
         msgDiv.className = `message ${sender}`;
         msgDiv.innerHTML = `<div class="bubble">${text.replace(/\n/g, '<br>')}</div>`;
         
-        // 로딩바 위에 삽입
-        const loading = document.getElementById('loading');
+        // 로딩바 바로 앞에 메시지 삽입 
         chatBox.insertBefore(msgDiv, loading);
+        
         chatBox.scrollTop = chatBox.scrollHeight;
     }
 </script>
