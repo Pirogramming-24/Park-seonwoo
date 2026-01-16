@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>AI 영화 추천 챗봇</title>
+    <style>
+        /* 간단한 채팅창 스타일 */
+        body { font-family: 'Apple SD Gothic Neo', sans-serif; background-color: #f4f7f6; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .chat-container { width: 400px; height: 600px; background: white; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); display: flex; flex-direction: column; overflow: hidden; }
+        .chat-header { background: #4a90e2; color: white; padding: 15px; text-align: center; font-weight: bold; }
+        
+        /* 채팅 내역 영역 */
+        .chat-messages { flex: 1; padding: 20px; overflow-y: auto; background: #f9f9f9; }
+        
+        /* 메시지 말풍선 스타일 */
+        .message { margin-bottom: 15px; display: flex; }
+        .message.user { justify-content: flex-end; }
+        .message.bot { justify-content: flex-start; }
+        
+        .bubble { max-width: 70%; padding: 10px 15px; border-radius: 15px; font-size: 14px; line-height: 1.4; position: relative; }
+        .message.user .bubble { background: #4a90e2; color: white; border-bottom-right-radius: 2px; }
+        .message.bot .bubble { background: #e0e0e0; color: #333; border-bottom-left-radius: 2px; }
+
+        /* 입력창 영역 */
+        .chat-input { padding: 15px; background: white; border-top: 1px solid #ddd; display: flex; }
+        .chat-input input { flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 20px; outline: none; }
+        .chat-input button { margin-left: 10px; padding: 10px 20px; background: #4a90e2; color: white; border: none; border-radius: 20px; cursor: pointer; transition: 0.2s; }
+        .chat-input button:hover { background: #357abd; }
+        
+        /* 로딩 애니메이션 */
+        .loading { display: none; text-align: center; margin-bottom: 15px; font-size: 12px; color: #888; }
+    </style>
+</head>
+<body>
+
+<div class="chat-container">
+    <div class="chat-header">🎬 AI 영화 추천 봇</div>
+    
+    <div class="chat-messages" id="chat-box">
+        <div class="message bot">
+            <div class="bubble">안녕하세요! 영화 취향을 말씀해 주시면 딱 맞는 영화를 추천해 드릴게요. 🍿</div>
+        </div>
+    </div>
+
+    <div class="loading" id="loading">AI가 영화를 찾고 있어요... 🤖</div>
+
+    <div class="chat-input">
+        <input type="text" id="user-input" placeholder="예: 따뜻한 가족 영화 추천해줘" onkeypress="if(event.keyCode==13) sendMessage()">
+        <button onclick="sendMessage()">전송</button>
+    </div>
+</div>
+
+<script>
+    async function sendMessage() {
+        const inputField = document.getElementById('user-input');
+        const question = inputField.value.trim();
+        const chatBox = document.getElementById('chat-box');
+        const loading = document.getElementById('loading');
+
+        if (!question) return; // 빈 내용이면 전송 안 함
+
+        // 1. 사용자 메시지 화면에 추가
+        appendMessage('user', question);
+        inputField.value = ''; // 입력창 비우기
+
+        // 2. 로딩 표시 켜기
+        loading.style.display = 'block';
+        chatBox.scrollTop = chatBox.scrollHeight; // 스크롤 내리기
+
+        try {
+            // 3. 백엔드 API로 질문 전송 (fetch)
+            const response = await fetch('/api/chat/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ question: question })
+            });
+
+            const data = await response.json();
+
+            // 4. 로딩 끄고 봇 답변 화면에 추가
+            loading.style.display = 'none';
+            if (data.answer) {
+                appendMessage('bot', data.answer);
+            } else {
+                appendMessage('bot', '죄송해요, 오류가 발생했어요. 다시 물어봐 주세요. 😢');
+            }
+
+        } catch (error) {
+            console.error('Error:', error);
+            loading.style.display = 'none';
+            appendMessage('bot', '서버와 연결할 수 없습니다. 잠시 후 다시 시도해 주세요.');
+        }
+    }
+
+    // 메시지를 화면에 붙이는 함수
+    function appendMessage(sender, text) {
+        const chatBox = document.getElementById('chat-box');
+        const msgDiv = document.createElement('div');
+        msgDiv.className = `message ${sender}`;
+        
+        // 줄바꿈 처리 등을 위해 HTML로 삽입
+        msgDiv.innerHTML = `<div class="bubble">${text.replace(/\n/g, '<br>')}</div>`;
+        
+        chatBox.appendChild(msgDiv);
+        chatBox.scrollTop = chatBox.scrollHeight; // 스크롤 맨 아래로
+    }
+</script>
+
+</body>
+</html>
