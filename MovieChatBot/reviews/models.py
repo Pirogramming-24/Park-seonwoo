@@ -36,9 +36,10 @@ class Review(models.Model):
     content = models.TextField() 
     created_at = models.DateTimeField(auto_now_add=True)
 
-    # [추가] 이 리뷰가 TMDB의 어떤 영화와 관련 있는지 연결하는 고리
-    # 기존 데이터들을 위해 null=True, blank=True를 설정합니다. (기존 데이터 안 깨짐!)
+    # 이 리뷰가 TMDB의 어떤 영화와 관련 있는지 연결하는 고리
+    # 기존 데이터들을 위해 null=True, blank=True를 설정
     tmdb_id = models.IntegerField(null=True, blank=True)
+    image = models.ImageField(upload_to='reviews/', null=True, blank=True) #이미지저장  
 
     def get_runtime_display(self):
         hours = self.runtime // 60  

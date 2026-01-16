@@ -1,0 +1,356 @@
+{% extends 'base.html' %}
+
+{% block title %}나의 영화 컬렉션 - My Movie Reviews{% endblock %}
+
+{% block extra_style %}
+<style>
+    /* === 히어로 섹션 === */
+    .hero-section {
+        text-align: center;
+        margin-bottom: 50px;
+    }
+
+    .hero-title {
+        font-size: 38px;
+        font-weight: bold;
+        color: #ffffff;
+        margin-bottom: 35px;
+    }
+
+    .stats-container {
+        display: flex;
+        justify-content: center;
+        gap: 25px;
+        flex-wrap: wrap;
+    }
+
+    .stat-box {
+        background: #1e1e1e;
+        padding: 25px 45px;
+        border-radius: 12px;
+        border: 1px solid #333;
+        text-align: center;
+        min-width: 130px;
+        transition: all 0.3s ease;
+    }
+
+    .stat-box:hover {
+        border-color: #00E054;
+        transform: translateY(-3px);
+    }
+
+    .stat-number {
+        display: block;
+        font-size: 40px;
+        font-weight: bold;
+        color: #00E054;
+        margin-bottom: 8px;
+    }
+
+    .stat-label {
+        font-size: 14px;
+        color: #888;
+    }
+
+    /* === 검색 영역 === */
+    .search-container {
+        display: flex;
+        background: #1e1e1e;
+        border: 2px solid #00E054;
+        border-radius: 10px;
+        padding: 6px;
+        margin-bottom: 40px;
+        max-width: 800px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .search-input {
+        flex: 1;
+        background: transparent;
+        border: none;
+        color: #ffffff;
+        padding: 15px 20px;
+        font-size: 16px;
+        outline: none;
+    }
+
+    .search-input::placeholder {
+        color: #666;
+    }
+
+    .search-btn {
+        background: #00E054;
+        color: #121212;
+        border: none;
+        padding: 12px 35px;
+        border-radius: 6px;
+        font-weight: bold;
+        font-size: 15px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .search-btn:hover {
+        background: #00b043;
+        transform: scale(1.05);
+    }
+
+    /* === 필터/정렬 바 === */
+    .filter-bar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 30px;
+        flex-wrap: wrap;
+        gap: 15px;
+    }
+
+    .filter-group, .sort-group {
+        display: flex;
+        gap: 10px;
+    }
+
+    .filter-group a, .sort-group a {
+        color: #888;
+        text-decoration: none;
+        padding: 8px 18px;
+        border-radius: 20px;
+        font-size: 14px;
+        transition: all 0.3s ease;
+        border: 1px solid transparent;
+    }
+
+    .filter-group a:hover, .sort-group a:hover {
+        color: #00E054;
+        border-color: #00E054;
+    }
+
+    .filter-group a.active, .sort-group a.active {
+        background: #00E054;
+        color: #121212;
+        font-weight: bold;
+    }
+
+    /* === 영화 그리드 === */
+    .movie-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: 30px;
+    }
+
+    .movie-card {
+        background: #1e1e1e;
+        border-radius: 12px;
+        overflow: hidden;
+        transition: all 0.3s ease;
+        position: relative;
+        border: 1px solid #333;
+    }
+
+    .movie-card:hover {
+        transform: translateY(-8px);
+        border-color: #00E054;
+        box-shadow: 0 8px 24px rgba(0, 224, 84, 0.2);
+    }
+
+    .poster-area {
+        height: 330px;
+        background: #333;
+        overflow: hidden;
+        position: relative;
+    }
+
+    .poster-area img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.3s ease;
+    }
+
+    .movie-card:hover .poster-area img {
+        transform: scale(1.05);
+    }
+
+    .badge {
+        position: absolute;
+        top: 12px;
+        right: 12px;
+        padding: 6px 12px;
+        border-radius: 6px;
+        font-size: 12px;
+        font-weight: bold;
+        backdrop-filter: blur(10px);
+    }
+
+    .badge-tmdb {
+        background: rgba(0, 224, 84, 0.9);
+        color: #121212;
+    }
+
+    .badge-review {
+        background: rgba(108, 92, 231, 0.9);
+        color: #ffffff;
+    }
+
+    .card-info {
+        padding: 18px;
+    }
+
+    .card-title {
+        font-size: 17px;
+        font-weight: bold;
+        margin-bottom: 8px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        color: #ffffff;
+    }
+
+    .card-meta {
+        color: #888;
+        font-size: 13px;
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 12px;
+    }
+
+    .star-rating {
+        color: #FFD700;
+        font-size: 15px;
+        font-weight: bold;
+    }
+
+    /* 빈 결과 스타일 */
+    .empty-state {
+        text-align: center;
+        grid-column: 1 / -1;
+        padding: 80px 20px;
+        color: #888;
+    }
+
+    .empty-state-icon {
+        font-size: 64px;
+        margin-bottom: 20px;
+    }
+
+    .empty-state-text {
+        font-size: 18px;
+    }
+
+    /* 반응형 */
+    @media (max-width: 768px) {
+        .hero-title {
+            font-size: 28px;
+        }
+
+        .filter-bar {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .filter-group, .sort-group {
+            justify-content: center;
+        }
+
+        .movie-grid {
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 20px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- 히어로 섹션 -->
+<section class="hero-section">
+    <h1 class="hero-title">나의 영화 컬렉션</h1>
+    <div class="stats-container">
+        <div class="stat-box">
+            <span class="stat-number">{{ total_count }}</span>
+            <span class="stat-label">총 영화</span>
+        </div>
+        <div class="stat-box">
+            <span class="stat-number">{{ tmdb_count }}</span>
+            <span class="stat-label">TMDB 영화</span>
+        </div>
+        <div class="stat-box">
+            <span class="stat-number">{{ review_count }}</span>
+            <span class="stat-label">직접 추가</span>
+        </div>
+    </div>
+</section>
+
+<!-- 검색 영역 -->
+<form class="search-container" method="GET">
+    <input 
+        type="text" 
+        name="q" 
+        class="search-input" 
+        placeholder="영화 제목, 감독, 배우로 검색..." 
+        value="{{ query|default:'' }}"
+    >
+    <button type="submit" class="search-btn">검색</button>
+</form>
+
+<!-- 필터 및 정렬 -->
+<div class="filter-bar">
+    <div class="filter-group">
+        <a href="?filter=all" class="{% if request.GET.filter == 'all' or not request.GET.filter %}active{% endif %}">전체</a>
+        <a href="?filter=tmdb" class="{% if request.GET.filter == 'tmdb' %}active{% endif %}">TMDB</a>
+        <a href="?filter=review" class="{% if request.GET.filter == 'review' %}active{% endif %}">직접 추가</a>
+    </div>
+    <div class="sort-group">
+        <a href="?sort=latest{% if request.GET.filter %}&filter={{ request.GET.filter }}{% endif %}" 
+           class="{% if sort == 'latest' or not sort %}active{% endif %}">최신순</a>
+        <a href="?sort=title{% if request.GET.filter %}&filter={{ request.GET.filter }}{% endif %}" 
+           class="{% if sort == 'title' %}active{% endif %}">제목순</a>
+        <a href="?sort=rating{% if request.GET.filter %}&filter={{ request.GET.filter }}{% endif %}" 
+           class="{% if sort == 'rating' %}active{% endif %}">평점순</a>
+    </div>
+</div>
+
+<!-- 영화 그리드 -->
+<div class="movie-grid">
+    {% for item in combined_list %}
+        <a href="{% if item.type == 'REVIEW' %}{% url 'reviews:review_detail' item.id %}{% else %}{% url 'reviews:movie_detail' item.id %}{% endif %}" 
+           style="text-decoration: none; color: inherit;">
+            
+            <div class="movie-card">
+                <div class="poster-area">
+                    {% if item.type == 'TMDB' and item.image %}
+                        <img src="{{ item.image }}" alt="{{ item.title }}">
+                        <span class="badge badge-tmdb">TMDB</span>
+
+                    {% elif item.type == 'REVIEW' %}
+                        {% if item.image %}
+                            <img src="{{ item.image }}" alt="{{ item.title }}">
+                        {% else %}
+                            <div style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; color:#555; background:#222;">
+                                <span style="font-size:40px;">📝</span>
+                            </div>
+                        {% endif %}
+                        <span class="badge badge-review">USER</span>
+
+                    {% else %}
+                        <div style="width:100%; height:100%; background:#222;"></div>
+                    {% endif %}
+                </div>
+                
+                <div class="card-info">
+                    <div class="card-title">{{ item.title }}</div>
+                    <div class="card-meta">
+                        <span>{{ item.year }}</span>
+                        <span>{{ item.director }}</span>
+                    </div>
+                    <div class="star-rating">★ {{ item.rating }}</div>
+                </div>
+            </div>
+        </a>
+    {% empty %}
+        <div style="text-align:center; grid-column: 1 / -1; padding: 50px; color: #888;">
+            검색 결과가 없습니다. 😢
+        </div>
+    {% endfor %}
+</div>
+{% endblock %}

@@ -119,3 +119,8 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 TMDB_API_KEY = os.environ.get('TMDB_API_KEY')
+
+# 웹에서 이미지에 접근할 때 쓸 주소 (예: http://.../media/사진.jpg)
+MEDIA_URL = '/media/'
+# 실제로 파일이 저장될 컴퓨터 내부 경로
+MEDIA_ROOT = BASE_DIR / 'media'
