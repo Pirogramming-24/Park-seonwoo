@@ -1,0 +1,166 @@
+{% extends 'base.html' %}
+
+{% block title %}리뷰 수정 - {{ review.title }}{% endblock %}
+
+{% block content %}
+<div class="form-container">
+    <h2 class="form-title">✏️ 리뷰 수정하기</h2>
+    
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        
+        <div class="form-group">
+            <label for="title">영화 제목 *</label>
+            <input type="text" id="title" name="title" required 
+                   value="{{ review.title }}" autofocus>
+        </div>
+        
+        <div class="form-group">
+            <label for="director">감독</label>
+            <input type="text" id="director" name="director" 
+                   value="{{ review.director }}">
+        </div>
+
+        <div class="form-group">
+            <label for="main_actor">주연 배우 *</label>
+            <input type="text" id="main_actor" name="main_actor" required 
+                   value="{{ review.main_actor }}">
+        </div>
+        
+        <div class="form-group">
+            <label for="genre">장르 *</label>
+            <select id="genre" name="genre" required>
+                <option value="action" {% if review.genre == 'action' %}selected{% endif %}>액션</option>
+                <option value="romance" {% if review.genre == 'romance' %}selected{% endif %}>로맨스</option>
+                <option value="comedy" {% if review.genre == 'comedy' %}selected{% endif %}>코미디</option>
+                <option value="sf" {% if review.genre == 'sf' %}selected{% endif %}>SF</option>
+                <option value="horror" {% if review.genre == 'horror' %}selected{% endif %}>공포</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="year">개봉 연도</label>
+            <input type="number" id="year" name="release_year" min="1900" max="2030" 
+                   value="{{ review.release_year }}">
+        </div>
+
+        <div class="form-group">
+            <label for="runtime">러닝타임 (분) *</label>
+            <input type="number" id="runtime" name="runtime" required 
+                   value="{{ review.runtime }}">
+        </div>
+        
+        <div class="form-group">
+            <label for="rating">평점 (1-10)</label>
+            <input type="number" id="rating" name="rating" min="1" max="10" step="0.1" 
+                   value="{{ review.rating }}">
+            <small style="color: #888; font-size: 13px; margin-top: 5px; display: block;">
+                1점(최저) ~ 10점(최고) 사이의 점수를 입력하세요
+            </small>
+        </div>
+        
+        <div class="form-group">
+            <label for="content">리뷰 내용 *</label>
+            <textarea id="content" name="content" rows="10" required>{{ review.content }}</textarea>
+        </div>
+
+        <div class="form-group">
+            <label for="image">포스터 이미지 (선택)</label>
+            
+            {% if review.image %}
+                <div style="margin-bottom: 15px; background: #1e1e1e; padding: 10px; border-radius: 8px;">
+                    <p style="color:#aaa; font-size:14px; margin-bottom:5px;">현재 등록된 이미지:</p>
+                    <img src="/media/{{ review.image }}" alt="현재 포스터" 
+                         style="max-width: 150px; border-radius: 5px;">
+                </div>
+            {% endif %}
+
+            <input 
+                type="file" 
+                id="image" 
+                name="image"
+                accept="image/*"
+                style="padding: 10px; background: #121212; border: 2px dashed #333; border-radius: 8px; cursor: pointer;"
+            >
+            <small style="color: #888; font-size: 13px; margin-top: 5px; display: block;">
+                새 파일을 업로드하면 기존 이미지는 교체됩니다.
+            </small>
+        </div>
+        
+        <div class="button-group" style="margin-top: 30px;">
+            <button type="submit" class="btn btn-primary">
+                💾 수정 완료
+            </button>
+            <a href="{% url 'reviews:review_detail' review.pk %}" class="btn btn-secondary" style="display:block; text-align:center; margin-top:10px; color:#888;">
+                ❌ 취소하고 돌아가기
+            </a>
+        </div>
+    </form>
+</div>
+
+<style>
+    input, textarea, select {
+        width: 100%;
+        padding: 12px;
+        background: #1e1e1e;
+        border: 1px solid #333;
+        color: white;
+        border-radius: 8px;
+        font-size: 16px;
+        box-sizing: border-box;
+        font-family: inherit;
+        margin-top: 5px;
+    }
+
+    input:focus, textarea:focus, select:focus {
+        outline: none;
+        border-color: #00E054;
+        box-shadow: 0 0 0 3px rgba(0, 224, 84, 0.1);
+    }
+    
+    input[type="file"]:hover {
+        border-color: #00E054 !important;
+    }
+
+    label {
+        color: #00E054;
+        font-weight: bold;
+        display: block;
+        margin-top: 20px;
+    }
+
+    .btn-primary {
+        background: #00E054;
+        color: black;
+        border: none;
+        padding: 15px;
+        width: 100%;
+        font-weight: bold;
+        font-size: 16px;
+        cursor: pointer;
+        border-radius: 8px;
+        transition: 0.3s;
+    }
+    .btn-primary:hover { background: #00c040; }
+
+    small { display: block; line-height: 1.4; }
+
+    .form-container {
+        max-width: 600px;
+        margin: 0 auto;
+        padding-bottom: 50px;
+        animation: fadeInUp 0.5s ease;
+    }
+
+    @keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .form-title {
+        text-align: center;
+        margin-bottom: 30px;
+        font-size: 28px;
+    }
+</style>
+{% endblock %}

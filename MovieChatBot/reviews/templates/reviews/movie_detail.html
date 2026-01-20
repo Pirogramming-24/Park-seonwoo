@@ -1,0 +1,104 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ movie.title }} - My Movie Reviews{% endblock %}
+
+{% block content %}
+<style>
+    /* 상세 페이지 스타일 */
+    .detail-container {
+        display: flex;
+        gap: 40px;
+        background: #1e1e1e;
+        padding: 40px;
+        border-radius: 15px;
+        border: 1px solid #333;
+        margin-top: 20px;
+        color: white;
+    }
+    
+    .detail-header { display: flex; gap: 40px; width: 100%; }
+    .detail-info { flex: 1; }
+    
+    .detail-title { font-size: 36px; font-weight: bold; margin-bottom: 20px; color: #00E054; margin-top: 0; }
+    
+    .detail-meta { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
+    .detail-meta-item { display: flex; align-items: center; }
+    .detail-meta-label { width: 80px; color: #888; font-size: 14px; }
+    .detail-meta-value { font-size: 16px; }
+    .detail-rating { color: #FFD700; font-weight: bold; }
+
+    .genre-badge {
+        background: #333; 
+        padding: 6px 12px; 
+        border-radius: 15px; 
+        font-size: 13px; 
+        border: 1px solid #555;
+        margin-right: 5px;
+        display: inline-block;
+    }
+
+    .detail-section { margin-top: 30px; border-top: 1px solid #333; padding-top: 20px; }
+    .detail-section h3 { color: #00E054; margin-bottom: 15px; }
+    .detail-section p { line-height: 1.6; color: #ddd; }
+
+    .btn {
+        display: inline-block;
+        padding: 10px 20px;
+        border-radius: 5px;
+        text-decoration: none;
+        font-weight: bold;
+        transition: 0.3s;
+    }
+    .btn-secondary { background: #333; color: white; border: 1px solid #555; }
+    .btn-secondary:hover { background: #444; }
+</style>
+
+<div class="detail-container">
+    <div class="detail-header">
+        <div class="detail-poster">
+            {% if movie.poster_path %}
+                <img src="{{ movie.poster_path }}" alt="{{ movie.title }}" style="width: 300px; border-radius: 10px; box-shadow: 0 10px 20px rgba(0,0,0,0.5);">
+            {% else %}
+                <div style="width: 300px; height: 450px; background: #333; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: #555;">
+                    이미지 없음
+                </div>
+            {% endif %}
+            
+            <div style="margin-top: 15px; text-align: center;">
+                <span style="background: rgba(0, 224, 84, 0.2); color: #00E054; padding: 6px 12px; border-radius: 4px; font-size: 12px; font-weight: bold;">
+                    TMDB DATA
+                </span>
+            </div>
+        </div>
+        
+        <div class="detail-info">
+            <h1 class="detail-title">{{ movie.title }}</h1>
+            
+            <div class="detail-meta">
+                <div class="detail-meta-item">
+                    <span class="detail-meta-label">개봉일</span>
+                    <span class="detail-meta-value">{{ movie.release_date|default:"정보 없음" }}</span>
+                </div>
+                
+                <div class="detail-meta-item">
+                    <span class="detail-meta-label">평점</span>
+                    <span class="detail-meta-value detail-rating">
+                        ★ {{ movie.vote_average|default:"0.0" }}
+                    </span>
+                </div>
+            </div>
+
+            <div class="detail-section">
+                <h3>📖 줄거리</h3>
+                <p>{{ movie.overview|default:"줄거리 정보가 없습니다." }}</p>
+            </div>
+            
+            <div style="margin-top: 40px;">
+                <a href="{% url 'reviews:main_page' %}" class="btn btn-secondary">
+                    ← 목록으로 돌아가기
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

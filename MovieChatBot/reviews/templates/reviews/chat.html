@@ -1,0 +1,205 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+    
+    /* 화면 중앙 정렬을 위한 래퍼 */
+    .chat-wrapper {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding-top: 20px;
+        padding-bottom: 40px;
+        height: calc(100vh - 150px);
+    }
+
+    /* 채팅창 카드 디자인 */
+    .chat-card { 
+        width: 400px; 
+        height: 600px; 
+        background: #1e1e1e;
+        border-radius: 20px; 
+        box-shadow: 0 10px 30px rgba(0,0,0,0.5); 
+        display: flex; 
+        flex-direction: column; 
+        overflow: hidden; 
+        border: 1px solid #333;
+    }
+
+    /* 채팅창 내부 헤더 */
+    .chat-header-inner { 
+        background: #252525; 
+        color: #00E054; 
+        padding: 15px; 
+        text-align: center; 
+        font-weight: bold; 
+        border-bottom: 1px solid #333;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    /* 채팅 영역 */
+    .chat-messages { 
+        flex: 1; 
+        padding: 20px; 
+        overflow-y: auto; 
+        background: #121212; 
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    /* 스크롤바 커스텀 */
+    .chat-messages::-webkit-scrollbar { width: 6px; }
+    .chat-messages::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
+
+    /* 말풍선 스타일 */
+    .message { display: flex; align-items: flex-end; max-width: 80%; }
+    .message.user { align-self: flex-end; justify-content: flex-end; }
+    .message.bot { align-self: flex-start; justify-content: flex-start; }
+    
+    .bubble { 
+        padding: 10px 15px; 
+        border-radius: 15px; 
+        font-size: 14px; 
+        line-height: 1.4; 
+        word-break: keep-all;
+    }
+
+    .message.user .bubble { 
+        background: #00E054; 
+        color: #121212; 
+        border-bottom-right-radius: 4px; 
+        font-weight: bold;
+    }
+
+    .message.bot .bubble { 
+        background: #333; 
+        color: white; 
+        border-bottom-left-radius: 4px; 
+    }
+
+    /* 입력창 영역 */
+    .chat-input-area { 
+        padding: 15px; 
+        background: #252525; 
+        border-top: 1px solid #333; 
+        display: flex; 
+        gap: 10px;
+    }
+    .chat-input-area input { 
+        margin: 0; 
+        flex: 1; 
+        padding: 10px 15px; 
+        background: #121212;
+        border: 1px solid #444; 
+        border-radius: 20px; 
+        color: white;
+    }
+    .chat-input-area button { 
+        margin: 0;
+        width: auto;
+        padding: 10px 20px; 
+        background: #00E054; 
+        color: #121212; 
+        border: none; 
+        border-radius: 20px; 
+        cursor: pointer; 
+        font-weight: bold;
+    }
+
+    /* 로딩 애니메이션 */
+    .loading-dots {
+        display: none;
+        margin-left: 10px; margin-bottom: 10px;
+    }
+    .dot {
+        display: inline-block; width: 6px; height: 6px;
+        background-color: #777; border-radius: 50%;
+        animation: bounce 1.4s infinite ease-in-out both;
+        margin-right: 3px;
+    }
+    .dot:nth-child(1) { animation-delay: -0.32s; }
+    .dot:nth-child(2) { animation-delay: -0.16s; }
+    @keyframes bounce { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1); } }
+</style>
+
+<div class="chat-wrapper">
+    <div class="chat-card">
+        <div class="chat-header-inner">
+            <span>🤖 AI 무비 큐레이터</span>
+        </div>
+        
+        <div class="chat-messages" id="chat-box">
+            <div class="message bot">
+                <div class="bubble">안녕하세요! 🎬<br>어떤 영화를 찾고 계신가요?</div>
+            </div>
+
+            <div class="loading-dots" id="loading">
+                <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+            </div>
+        </div>
+
+        <div class="chat-input-area">
+            <input type="text" id="user-input" placeholder="예: 반전 있는 스릴러 추천해줘" autocomplete="off" onkeypress="if(event.keyCode==13) sendMessage()">
+            <button onclick="sendMessage()">전송</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    async function sendMessage() {
+        const inputField = document.getElementById('user-input');
+        const question = inputField.value.trim();
+        const chatBox = document.getElementById('chat-box');
+        const loading = document.getElementById('loading');
+
+        if (!question) return;
+
+        // 1. 유저 메시지 추가
+        appendMessage('user', question);
+        inputField.value = '';
+
+        // 2. 로딩 켜기
+        loading.style.display = 'block';
+        chatBox.scrollTop = chatBox.scrollHeight;
+
+        try {
+            const response = await fetch('/api/chat/', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ question: question })
+            });
+            const data = await response.json();
+
+            // 3. 답변 표시
+            loading.style.display = 'none';
+            if (data.answer) {
+                appendMessage('bot', data.answer);
+            } else {
+                appendMessage('bot', '오류가 발생했습니다.');
+            }
+        } catch (error) {
+            console.error(error);
+            loading.style.display = 'none';
+            appendMessage('bot', '서버 연결 실패');
+        }
+    }
+
+    function appendMessage(sender, text) {
+        const chatBox = document.getElementById('chat-box');
+        const loading = document.getElementById('loading');
+        
+        const msgDiv = document.createElement('div');
+        msgDiv.className = `message ${sender}`;
+        msgDiv.innerHTML = `<div class="bubble">${text.replace(/\n/g, '<br>')}</div>`;
+        
+        // 로딩바 바로 앞에 메시지 삽입 
+        chatBox.insertBefore(msgDiv, loading);
+        
+        chatBox.scrollTop = chatBox.scrollHeight;
+    }
+</script>
+{% endblock %}

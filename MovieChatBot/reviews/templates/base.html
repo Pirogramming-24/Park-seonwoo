@@ -1,0 +1,355 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}My Movie Reviews{% endblock %}</title>
+    
+    <style>
+        /* === 기본 스타일 === */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body { 
+            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: #121212;
+            color: #ffffff;
+            min-height: 100vh;
+        }
+
+        /* === 헤더 네비게이션 === */
+        nav { 
+            background-color: #121212;
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #333;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        nav .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #00E054;
+            text-decoration: none;
+        }
+
+        nav .logo strong {
+            color: #ffffff;
+        }
+
+        nav .nav-links {
+            display: flex;
+            gap: 15px;
+        }
+
+        nav a.nav-btn {
+            text-decoration: none;
+            color: #00E054;
+            border: 1px solid #00E054;
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        nav a.nav-btn:hover {
+            background: #00E054;
+            color: #121212;
+            transform: translateY(-2px);
+        }
+
+        /* === 메인 컨테이너 === */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        /* === 폼 스타일 === */
+        .form-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: #1e1e1e;
+            padding: 40px;
+            border-radius: 12px;
+            border: 1px solid #333;
+        }
+
+        .form-title {
+            font-size: 28px;
+            color: #00E054;
+            margin-bottom: 30px;
+            font-weight: bold;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 10px;
+            color: #00E054;
+            font-weight: bold;
+            font-size: 15px;
+        }
+
+        .form-group input[type="text"],
+        .form-group input[type="number"],
+        .form-group input[type="date"],
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 14px 16px;
+            background: #121212;
+            border: 2px solid #333;
+            border-radius: 8px;
+            color: #ffffff;
+            font-size: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #00E054;
+            background: #1a1a1a;
+        }
+
+        .form-group textarea {
+            min-height: 150px;
+            resize: vertical;
+            font-family: inherit;
+            line-height: 1.6;
+        }
+
+        /* placeholder 스타일 */
+        ::placeholder {
+            color: #666;
+        }
+
+        /* === 버튼 스타일 === */
+        .btn {
+            display: inline-block;
+            padding: 14px 28px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            text-align: center;
+        }
+
+        .btn-primary {
+            background: #00E054;
+            color: #121212;
+        }
+
+        .btn-primary:hover {
+            background: #00b043;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 224, 84, 0.3);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: #ffffff;
+            border: 2px solid #555;
+        }
+
+        .btn-secondary:hover {
+            background: #333;
+            border-color: #777;
+        }
+
+        .btn-danger {
+            background: #e74c3c;
+            color: #ffffff;
+        }
+
+        .btn-danger:hover {
+            background: #c0392b;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        /* === 상세 페이지 스타일 === */
+        .detail-container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .detail-header {
+            display: flex;
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .detail-poster {
+            flex-shrink: 0;
+        }
+
+        .detail-poster img {
+            width: 300px;
+            border-radius: 12px;
+            border: 2px solid #333;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+        }
+
+        .detail-info {
+            flex: 1;
+        }
+
+        .detail-title {
+            font-size: 36px;
+            color: #00E054;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+
+        .detail-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 25px;
+            margin-bottom: 25px;
+        }
+
+        .detail-meta-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .detail-meta-label {
+            color: #888;
+            font-size: 13px;
+            margin-bottom: 5px;
+        }
+
+        .detail-meta-value {
+            color: #ffffff;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .detail-rating {
+            color: #FFD700;
+            font-size: 24px;
+        }
+
+        .detail-section {
+            background: #1e1e1e;
+            padding: 30px;
+            border-radius: 12px;
+            border: 1px solid #333;
+            margin-top: 30px;
+        }
+
+        .detail-section h3 {
+            color: #00E054;
+            margin-bottom: 15px;
+            font-size: 20px;
+        }
+
+        .detail-section p {
+            line-height: 1.8;
+            color: #cccccc;
+            font-size: 15px;
+        }
+
+        /* === 유틸리티 === */
+        .text-center {
+            text-align: center;
+        }
+
+        .mb-30 {
+            margin-bottom: 30px;
+        }
+
+        .error-message {
+            background: #e74c3c;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+        }
+
+        .success-message {
+            background: #00E054;
+            color: #121212;
+            padding: 12px 20px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+
+        /* === 반응형 === */
+        @media (max-width: 768px) {
+            nav {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .detail-header {
+                flex-direction: column;
+            }
+
+            .detail-poster img {
+                width: 100%;
+                max-width: 300px;
+            }
+
+            .form-container {
+                padding: 25px;
+            }
+
+            .button-group {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+
+    {% block extra_style %}{% endblock %}
+</head>
+<body>
+    <!-- 네비게이션 바 -->
+    <nav>
+        <a href="{% url 'reviews:main_page' %}" class="logo">
+            🎬 My <strong>Movie</strong> Reviews
+        </a>
+        <div class="nav-links">
+            <a href="{% url 'reviews:main_page' %}" class="nav-btn">전체 리뷰</a>
+            <a href="{% url 'reviews:review_create' %}" class="nav-btn">+ 새 리뷰</a>
+            <a href="{% url 'reviews:chat_page' %}" class="nav-btn">🤖 챗봇 추천</a>
+        </div>
+    </nav>
+
+    <!-- 메인 콘텐츠 영역 -->
+    <div class="container">
+        {% block content %}
+        <!-- 각 페이지의 내용이 여기에 -->
+        {% endblock %}
+    </div>
+
+    {% block extra_script %}{% endblock %}
+</body>
+</html>

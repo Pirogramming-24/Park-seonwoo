@@ -1,0 +1,185 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ review.title }} - My Movie Reviews{% endblock %}
+
+{% block content %}
+<style>
+    /* 상세 페이지 전용 스타일 */
+    .detail-container {
+        display: flex;
+        flex-direction: column;
+        gap: 30px;
+        background: #1e1e1e;
+        padding: 40px;
+        border-radius: 15px;
+        border: 1px solid #333;
+        margin-top: 20px;
+        color: white;
+    }
+    
+    .detail-header { display: flex; gap: 40px; }
+    
+    /* 반응형: 모바일에서는 세로로 배치 */
+    @media (max-width: 768px) {
+        .detail-header { flex-direction: column; align-items: center; }
+    }
+
+    .detail-info { flex: 1; width: 100%; }
+    
+    .detail-title { 
+        font-size: 36px; 
+        font-weight: bold; 
+        margin-bottom: 20px; 
+        color: #00E054; 
+        margin-top: 0; 
+    }
+    
+    .detail-meta { 
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 15px;
+        margin-bottom: 25px;
+    }
+    
+    .detail-meta-item { display: flex; flex-direction: column; }
+    .detail-meta-label { color: #888; font-size: 13px; margin-bottom: 4px; }
+    .detail-meta-value { font-size: 16px; font-weight: 500; }
+    .detail-rating { color: #FFD700; font-weight: bold; font-size: 18px; }
+
+    .genre-badge {
+        background: #333; 
+        color: #00E054;
+        padding: 6px 12px; 
+        border-radius: 15px; 
+        font-size: 13px; 
+        border: 1px solid #00E054;
+        display: inline-block;
+        font-weight: bold;
+    }
+
+    .detail-section { 
+        margin-top: 20px; 
+        border-top: 1px solid #333; 
+        padding-top: 20px; 
+    }
+    .detail-section h3 { color: #00E054; margin-bottom: 15px; }
+    .detail-text { 
+        line-height: 1.8; 
+        color: #ddd; 
+        font-size: 16px; 
+        white-space: pre-line; /* 줄바꿈 적용 */
+    }
+
+    /* 버튼 스타일 */
+    .btn {
+        display: inline-block;
+        padding: 10px 20px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: bold;
+        font-size: 14px;
+        transition: 0.3s;
+        border: none;
+        cursor: pointer;
+    }
+    .btn-secondary { background: #333; color: white; border: 1px solid #555; }
+    .btn-secondary:hover { background: #444; }
+    
+    .btn-primary { background: #00E054; color: black; }
+    .btn-primary:hover { background: #00c040; }
+    
+    .btn-danger { background: #ff4757; color: white; }
+    .btn-danger:hover { background: #ff6b81; }
+
+    .button-group { display: flex; gap: 10px; flex-wrap: wrap; }
+</style>
+
+<div class="detail-container">
+    <div class="detail-header">
+        <div class="detail-poster">
+            {% if review.image %}
+                <img src="{{ review.image.url }}" alt="{{ review.title }}" 
+                     style="width: 300px; border-radius: 10px; box-shadow: 0 10px 20px rgba(0,0,0,0.5); object-fit: cover;">
+            {% else %}
+                <div style="width: 300px; height: 450px; background: #252525; border-radius: 10px; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #555; border: 2px dashed #444;">
+                    <span style="font-size: 50px;">🎬</span>
+                    <span style="font-size: 14px; margin-top: 10px;">이미지 없음</span>
+                </div>
+            {% endif %}
+            
+            <div style="margin-top: 15px; text-align: center;">
+                <span style="background: #6c5ce7; color: white; padding: 6px 12px; border-radius: 4px; font-size: 12px; font-weight: bold;">
+                    USER REVIEW
+                </span>
+            </div>
+        </div>
+        
+        <div class="detail-info">
+            <h1 class="detail-title">{{ review.title }}</h1>
+            
+            <div class="detail-meta">
+                <div class="detail-meta-item">
+                    <span class="detail-meta-label">감독</span>
+                    <span class="detail-meta-value">{{ review.director|default:"-" }}</span>
+                </div>
+                <div class="detail-meta-item">
+                    <span class="detail-meta-label">주연</span>
+                    <span class="detail-meta-value">{{ review.main_actor|default:"-" }}</span>
+                </div>
+                <div class="detail-meta-item">
+                    <span class="detail-meta-label">개봉</span>
+                    <span class="detail-meta-value">{{ review.release_year|default:"-" }}년</span>
+                </div>
+                <div class="detail-meta-item">
+                    <span class="detail-meta-label">러닝타임</span>
+                    <span class="detail-meta-value">{{ review.runtime|default:"-" }}분</span>
+                </div>
+                <div class="detail-meta-item">
+                    <span class="detail-meta-label">내 평점</span>
+                    <span class="detail-meta-value detail-rating">
+                        ★ {{ review.rating|default:"0.0" }}
+                    </span>
+                </div>
+            </div>
+
+            <div style="margin-bottom: 20px;">
+                <span class="detail-meta-label" style="display:block; margin-bottom:5px;">장르</span>
+                <span class="genre-badge">{{ review.get_genre_display }}</span>
+            </div>
+
+            <div style="background: #252525; padding: 15px; border-radius: 8px; font-size: 13px; color: #aaa;">
+                <div>✍️ 작성일: {{ review.created_at|date:"Y.m.d H:i" }}</div>
+                {% if review.updated_at != review.created_at %}
+                <div style="margin-top: 5px;">✏️ 수정일: {{ review.updated_at|date:"Y.m.d H:i" }}</div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="detail-section">
+        <h3>📝 리뷰 내용</h3>
+        <div class="detail-text">
+            {{ review.content|linebreaks }}
+        </div>
+    </div>
+    
+    <div class="button-group" style="margin-top: 20px; border-top: 1px solid #333; padding-top: 30px;">
+        <a href="{% url 'reviews:main_page' %}" class="btn btn-secondary">
+            ← 목록으로
+        </a>
+        
+        <div style="margin-left: auto; display: flex; gap: 10px;">
+            <a href="{% url 'reviews:review_update' review.pk %}" class="btn btn-primary">
+                ✏️ 수정하기
+            </a>
+            
+            <form method="POST" action="{% url 'reviews:review_delete' review.pk %}">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger" onclick="return confirm('정말 이 리뷰를 삭제하시겠습니까?');">
+                    🗑️ 삭제하기
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

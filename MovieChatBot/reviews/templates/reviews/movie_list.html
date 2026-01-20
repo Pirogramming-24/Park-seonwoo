@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>영화 검색 및 목록</title>
+    <style>
+        /* 간단한 카드 레이아웃 스타일 (기능 5 맛보기) */
+        .movie-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; padding: 20px; }
+        .movie-card { border: 1px solid #ddd; border-radius: 8px; overflow: hidden; text-align: center; padding-bottom: 10px; }
+        .movie-card img { width: 100%; height: auto; }
+    </style>
+</head>
+<body>
+
+    <h1>🎬 TMDB 인기 영화 목록</h1>
+
+    <section>
+        <form method="GET" action="{% url 'reviews:movie_list' %}">
+            <input type="text" name="q" placeholder="영화 제목 검색..." value="{{ query }}">
+            
+            <select name="sort" onchange="this.form.submit()">
+                <option value="latest" {% if sort == 'latest' %}selected{% endif %}>최신순</option>
+                <option value="rating" {% if sort == 'rating' %}selected{% endif %}>평점순</option>
+            </select>
+            
+            <button type="submit">검색</button>
+            <a href="{% url 'reviews:movie_list' %}">초기화</a>
+        </form>
+    </section>
+
+    <hr>
+
+    <div class="movie-grid">
+        {% for movie in movies %}
+            <div class="movie-card">
+                {% if movie.poster_path %}
+                    <img src="{{ movie.poster_path }}" alt="{{ movie.title }}">
+                {% else %}
+                    <div style="height:300px; background:#eee; line-height:300px;">이미지 없음</div>
+                {% endif %}
+                <h3>{{ movie.title }}</h3>
+                <p>⭐ {{ movie.vote_average }}</p>
+                <p>{{ movie.release_date }}</p>
+            </div>
+        {% empty %}
+            <p>해당하는 영화가 없습니다. 😢</p>
+        {% endfor %}
+    </div>
+
+</body>
+</html>
