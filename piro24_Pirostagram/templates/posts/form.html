@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>{% if is_update %}게시글 수정{% else %}게시글 작성{% endif %}</h2>
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">{% if is_update %}수정{% else %}작성{% endif %}</button>
+    <a href="{% url 'posts:list' %}">취소</a>
+</form>
+{% endblock %}

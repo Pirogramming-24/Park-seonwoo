@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>피드</h2>
+
+{% for post in posts %}
+<div style="border: 1px solid #dbdbdb; margin-bottom: 20px; background: white; padding: 15px;">
+    <div>
+        <strong><a href="{% url 'users:profile' post.author.username %}">{{ post.author.username }}</a></strong>
+    </div>
+    
+    {% if post.image %}
+    <img src="{{ post.image.url }}" style="width: 100%; max-width: 600px; margin: 10px 0;">
+    {% endif %}
+    
+    <div style="margin: 10px 0;">
+        <a href="{% url 'posts:like' post.pk %}">
+            {% if user in post.likes.all %}❤️{% else %}🤍{% endif %}
+        </a>
+        <strong>좋아요 {{ post.likes_count }}개</strong>
+    </div>
+    
+    <p><strong>{{ post.author.username }}</strong> {{ post.content }}</p>
+    
+    <div>
+        <a href="{% url 'posts:detail' post.pk %}">댓글 {{ post.comments_count }}개 모두 보기</a>
+    </div>
+    
+    {% if post.author == user %}
+    <div>
+        <a href="{% url 'posts:update' post.pk %}">수정</a>
+        <a href="{% url 'posts:delete' post.pk %}" onclick="return confirm('삭제하시겠습니까?')">삭제</a>
+    </div>
+    {% endif %}
+</div>
+{% empty %}
+<p>게시글이 없습니다. 사람들을 팔로우하거나 게시글을 작성해보세요!</p>
+{% endfor %}
+{% endblock %}

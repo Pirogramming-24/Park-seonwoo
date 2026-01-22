@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div style="background: black; padding: 20px; text-align: center;">
+    <div style="color: white; margin-bottom: 10px;">
+        <strong>{{ story.author.username }}</strong>의 스토리
+    </div>
+    
+    {% for image in images %}
+    <img src="{{ image.image.url }}" style="max-width: 100%; max-height: 80vh; margin: 10px 0;">
+    {% endfor %}
+    
+    <div style="margin-top: 20px;">
+        {% if prev_story %}
+        <a href="{% url 'stories:view' prev_story.pk %}" style="color: white;">← 이전</a>
+        {% endif %}
+        
+        {% if next_story %}
+        <a href="{% url 'stories:view' next_story.pk %}" style="color: white;">다음 →</a>
+        {% endif %}
+    </div>
+    
+    {% if story.author == user %}
+    <div style="margin-top: 20px;">
+        <a href="{% url 'stories:delete' story.pk %}" onclick="return confirm('삭제하시겠습니까?')" style="color: red;">삭제</a>
+    </div>
+    {% endif %}
+</div>
+
+<a href="{% url 'posts:list' %}" style="display: block; margin-top: 20px;">← 피드로 돌아가기</a>
+{% endblock %}

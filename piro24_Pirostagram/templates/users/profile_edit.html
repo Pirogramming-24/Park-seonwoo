@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>프로필 편집</h2>
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">저장</button>
+    <a href="{% url 'users:profile' profile_user.username %}">취소</a>
+</form>
+{% endblock %}

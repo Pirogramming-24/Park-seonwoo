@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div style="border: 1px solid #dbdbdb; background: white; padding: 20px;">
+    {% if profile_user.profile_image %}
+    <img src="{{ profile_user.profile_image.url }}" style="width: 150px; height: 150px; border-radius: 50%;">
+    {% endif %}
+    
+    <h2>{{ profile_user.username }}</h2>
+    <p>{{ profile_user.first_name }} {{ profile_user.last_name }}</p>
+    <p>{{ profile_user.bio }}</p>
+    
+    <div style="margin: 20px 0;">
+        <strong>게시글 {{ profile_user.posts_count }}</strong> | 
+        <strong>팔로워 {{ profile_user.followers_count }}</strong> | 
+        <strong>팔로잉 {{ profile_user.following_count }}</strong>
+    </div>
+    
+    {% if is_own_profile %}
+        <a href="{% url 'users:profile_edit' profile_user.username %}">프로필 편집</a>
+    {% else %}
+        <a href="{% url 'users:follow_toggle' profile_user.username %}">
+            {% if is_following %}언팔로우{% else %}팔로우{% endif %}
+        </a>
+    {% endif %}
+</div>
+
+<h3 style="margin-top: 30px;">게시글</h3>
+<div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;">
+    {% for post in posts %}
+    <a href="{% url 'posts:detail' post.pk %}">
+        <img src="{{ post.image.url }}" style="width: 100%; aspect-ratio: 1;">
+    </a>
+    {% empty %}
+    <p>게시글이 없습니다.</p>
+    {% endfor %}
+</div>
+{% endblock %}
