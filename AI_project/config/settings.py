@@ -1,6 +1,13 @@
+# settings.py 파일 최상단
+import static_ffmpeg
+static_ffmpeg.add_paths()
 import os
 from pathlib import Path
 from dotenv import load_dotenv
+
+
+# 이 코드가 실행되면 자동으로 ffmpeg 경로를 잡아줍니다.
+static_ffmpeg.add_paths()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent

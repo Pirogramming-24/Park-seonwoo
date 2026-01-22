@@ -1,0 +1,120 @@
+{% extends 'ai_models/base.html' %}
+
+{% block title %}AI Studio - 홈{% endblock %}
+
+{% block content %}
+<style>
+    .hero {
+        text-align: center;
+        padding: 60px 20px;
+    }
+    .hero h1 {
+        font-size: 48px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 20px;
+    }
+    .hero p {
+        font-size: 20px;
+        color: #666;
+        margin-bottom: 40px;
+    }
+    .features {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 30px;
+        margin-top: 50px;
+    }
+    .feature-card {
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        padding: 30px;
+        border-radius: 15px;
+        text-align: center;
+        transition: transform 0.3s;
+        cursor: pointer;
+    }
+    .feature-card:hover {
+        transform: translateY(-10px);
+    }
+    .feature-card .icon {
+        font-size: 60px;
+        margin-bottom: 15px;
+    }
+    .feature-card h3 {
+        color: #333;
+        margin-bottom: 10px;
+    }
+    .feature-card p {
+        color: #666;
+        font-size: 14px;
+    }
+    .feature-card.locked {
+        opacity: 0.6;
+        position: relative;
+    }
+    .feature-card.locked::after {
+        content: '🔒';
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        font-size: 24px;
+    }
+</style>
+
+<div class="hero">
+    <h1>🤖 AI Studio에 오신 것을 환영합니다!</h1>
+    <p>다양한 AI 모델을 체험해보세요</p>
+    
+    {% if not user.is_authenticated %}
+        <div style="background: #fff3cd; border: 1px solid #ffc107; padding: 15px; border-radius: 10px; margin: 20px 0;">
+            <strong>💡 팁:</strong> 모든 기능을 사용하려면 <a href="{% url 'accounts:login' %}" style="color: #667eea; font-weight: bold;">로그인</a>해주세요!
+        </div>
+    {% endif %}
+</div>
+
+<div class="features">
+    <div class="feature-card" onclick="location.href='{% url 'ai_models:image_caption' %}'">
+        <div class="icon">🖼️</div>
+        <h3>이미지 캡셔닝</h3>
+        <p>이미지를 업로드하면 AI가 자동으로 설명을 생성합니다</p>
+        <div style="margin-top: 15px; color: #28a745; font-weight: bold;">✅ 누구나 사용 가능</div>
+    </div>
+
+    <div class="feature-card {% if not user.is_authenticated %}locked{% endif %}" 
+         onclick="checkLogin('{% url 'ai_models:speech_to_text' %}')">
+        <div class="icon">🎤</div>
+        <h3>음성→텍스트</h3>
+        <p>음성 파일을 텍스트로 자동 변환합니다</p>
+        {% if not user.is_authenticated %}
+            <div style="margin-top: 15px; color: #dc3545; font-weight: bold;">🔒 로그인 필요</div>
+        {% else %}
+            <div style="margin-top: 15px; color: #28a745; font-weight: bold;">✅ 사용 가능</div>
+        {% endif %}
+    </div>
+
+    <div class="feature-card {% if not user.is_authenticated %}locked{% endif %}" 
+         onclick="checkLogin('{% url 'ai_models:audio_genre' %}')">
+        <div class="icon">🎵</div>
+        <h3>음악 장르 분류</h3>
+        <p>음악 파일의 장르를 AI가 자동으로 분석합니다</p>
+        {% if not user.is_authenticated %}
+            <div style="margin-top: 15px; color: #dc3545; font-weight: bold;">🔒 로그인 필요</div>
+        {% else %}
+            <div style="margin-top: 15px; color: #28a745; font-weight: bold;">✅ 사용 가능</div>
+        {% endif %}
+    </div>
+
+    <div class="feature-card {% if not user.is_authenticated %}locked{% endif %}" 
+         onclick="checkLogin('{% url 'ai_models:podcast_maker' %}')">
+        <div class="icon">🎙️</div>
+        <h3>팟캐스트 메이커</h3>
+        <p>음성→텍스트→요약→썸네일까지 한번에!</p>
+        {% if not user.is_authenticated %}
+            <div style="margin-top: 15px; color: #dc3545; font-weight: bold;">🔒 로그인 필요</div>
+        {% else %}
+            <div style="margin-top: 15px; color: #28a745; font-weight: bold;">✅ 사용 가능</div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

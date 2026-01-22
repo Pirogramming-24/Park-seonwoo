@@ -129,7 +129,7 @@ class HuggingFaceService:
         try:
             # 파이프라인 실행
             pipe = HuggingFaceService._get_speech_to_text_pipeline()
-            result = pipe(audio_bytes)
+            result = pipe(audio_bytes, return_timestamps=True)
             
             text = result['text']
             
@@ -200,7 +200,7 @@ class HuggingFaceService:
             result = pipe(
                 text,
                 max_length=130,
-                min_length=30,
+                #min_length=30,
                 do_sample=False
             )
             
