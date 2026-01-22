@@ -1,11 +1,57 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h2>프로필 편집</h2>
-<form method="post" enctype="multipart/form-data">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">저장</button>
-    <a href="{% url 'users:profile' profile_user.username %}">취소</a>
-</form>
+<style>
+    .edit-container {
+        max-width: 600px;
+        margin: 40px auto;
+    }
+    .edit-card {
+        background: white;
+        border: 1px solid #dbdbdb;
+        border-radius: 8px;
+        padding: 40px;
+    }
+    .edit-card h2 {
+        font-size: 24px;
+        font-weight: 600;
+        margin-bottom: 24px;
+        text-align: center;
+    }
+    .form-group {
+        margin-bottom: 20px;
+    }
+    .form-group label {
+        display: block;
+        font-size: 14px;
+        font-weight: 600;
+        margin-bottom: 8px;
+    }
+    .form-actions {
+        display: flex;
+        gap: 12px;
+        margin-top: 24px;
+    }
+    .form-actions button,
+    .form-actions a {
+        flex: 1;
+        text-align: center;
+    }
+</style>
+
+<div class="edit-container">
+    <div class="edit-card">
+        <h2>프로필 편집</h2>
+        
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ form.as_p }}
+            
+            <div class="form-actions">
+                <a href="{% url 'users:profile' profile_user.username %}" class="btn btn-secondary">취소</a>
+                <button type="submit">저장</button>
+            </div>
+        </form>
+    </div>
+</div>
 {% endblock %}

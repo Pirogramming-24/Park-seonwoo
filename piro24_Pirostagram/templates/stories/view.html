@@ -1,31 +1,134 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div style="background: black; padding: 20px; text-align: center;">
-    <div style="color: white; margin-bottom: 10px;">
-        <strong>{{ story.author.username }}</strong>의 스토리
+<style>
+    .story-viewer {
+        max-width: 500px;
+        margin: 0 auto;
+        background: #000;
+        border-radius: 8px;
+        overflow: hidden;
+    }
+    .story-header {
+        background: linear-gradient(180deg, rgba(0,0,0,0.7) 0%, transparent 100%);
+        padding: 16px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 10;
+    }
+    .story-header img {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        border: 2px solid #fff;
+    }
+    .story-header strong {
+        color: #fff;
+        font-size: 14px;
+    }
+    .story-container {
+        position: relative;
+        min-height: 80vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #000;
+    }
+    .story-image {
+        max-width: 100%;
+        max-height: 80vh;
+        object-fit: contain;
+    }
+    .story-navigation {
+        display: flex;
+        justify-content: space-between;
+        padding: 20px;
+        background: #000;
+    }
+    .story-navigation a {
+        color: #fff;
+        font-size: 14px;
+        padding: 8px 16px;
+        background: rgba(255,255,255,0.1);
+        border-radius: 4px;
+    }
+    .story-navigation a:hover {
+        background: rgba(255,255,255,0.2);
+    }
+    .progress-bar {
+        display: flex;
+        gap: 4px;
+        padding: 8px 16px;
+        background: linear-gradient(180deg, rgba(0,0,0,0.5) 0%, transparent 100%);
+    }
+    .progress-segment {
+        flex: 1;
+        height: 2px;
+        background: rgba(255,255,255,0.3);
+        border-radius: 1px;
+        overflow: hidden;
+    }
+    .progress-fill {
+        height: 100%;
+        background: #fff;
+        width: 100%;
+    }
+</style>
+
+<div class="story-viewer">
+    <div class="progress-bar">
+        {% for image in images %}
+        <div class="progress-segment">
+            <div class="progress-fill"></div>
+        </div>
+        {% endfor %}
     </div>
     
-    {% for image in images %}
-    <img src="{{ image.image.url }}" style="max-width: 100%; max-height: 80vh; margin: 10px 0;">
-    {% endfor %}
+    <div class="story-container">
+        <div class="story-header">
+            {% if story.author.profile_image %}
+            <img src="{{ story.author.profile_image.url }}" alt="{{ story.author.username }}">
+            {% else %}
+            <div style="width: 32px; height: 32px; border-radius: 50%; background: #dbdbdb; border: 2px solid #fff;"></div>
+            {% endif %}
+            <strong>{{ story.author.username }}</strong>
+            <span style="color: rgba(255,255,255,0.6); font-size: 12px; margin-left: auto;">
+                {{ story.created_at|timesince }} 전
+            </span>
+        </div>
+        
+        {% for image in images %}
+        <img src="{{ image.image.url }}" class="story-image" alt="스토리 {{ forloop.counter }}">
+        {% endfor %}
+    </div>
     
-    <div style="margin-top: 20px;">
+    <div class="story-navigation">
         {% if prev_story %}
-        <a href="{% url 'stories:view' prev_story.pk %}" style="color: white;">← 이전</a>
+        <a href="{% url 'stories:view' prev_story.pk %}">← 이전 스토리</a>
+        {% else %}
+        <span></span>
         {% endif %}
         
+        <a href="{% url 'posts:list' %}" style="background: rgba(255,255,255,0.2);">닫기</a>
+        
         {% if next_story %}
-        <a href="{% url 'stories:view' next_story.pk %}" style="color: white;">다음 →</a>
+        <a href="{% url 'stories:view' next_story.pk %}">다음 스토리 →</a>
+        {% else %}
+        <span></span>
         {% endif %}
     </div>
     
     {% if story.author == user %}
-    <div style="margin-top: 20px;">
-        <a href="{% url 'stories:delete' story.pk %}" onclick="return confirm('삭제하시겠습니까?')" style="color: red;">삭제</a>
+    <div style="text-align: center; padding: 16px; background: #000;">
+        <a href="{% url 'stories:delete' story.pk %}" onclick="return confirm('스토리를 삭제하시겠습니까?')" style="color: #ed4956; font-size: 14px;">
+            스토리 삭제
+        </a>
     </div>
     {% endif %}
 </div>
-
-<a href="{% url 'posts:list' %}" style="display: block; margin-top: 20px;">← 피드로 돌아가기</a>
 {% endblock %}

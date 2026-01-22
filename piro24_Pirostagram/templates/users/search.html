@@ -1,26 +1,114 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h2>유저 검색</h2>
-<form method="get">
-    <input type="text" name="q" placeholder="아이디 또는 이름 검색" value="{{ query }}">
-    <button type="submit">검색</button>
-</form>
+<style>
+    .search-container {
+        max-width: 600px;
+        margin: 0 auto;
+    }
+    .search-box {
+        background: white;
+        border: 1px solid #dbdbdb;
+        border-radius: 8px;
+        padding: 16px;
+        margin-bottom: 24px;
+    }
+    .search-box input {
+        margin: 0;
+    }
+    .user-item {
+        background: white;
+        border: 1px solid #dbdbdb;
+        border-radius: 8px;
+        padding: 16px;
+        margin-bottom: 12px;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        transition: background 0.2s;
+    }
+    .user-item:hover {
+        background: #fafafa;
+    }
+    .user-avatar {
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        object-fit: cover;
+    }
+    .user-avatar-placeholder {
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        background: #dbdbdb;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+        color: #fff;
+    }
+    .user-info {
+        flex: 1;
+    }
+    .user-info strong {
+        display: block;
+        font-size: 14px;
+        font-weight: 600;
+        color: #262626;
+        margin-bottom: 4px;
+    }
+    .user-info span {
+        font-size: 14px;
+        color: #8e8e8e;
+    }
+    .empty-search {
+        text-align: center;
+        padding: 60px 20px;
+        background: white;
+        border: 1px solid #dbdbdb;
+        border-radius: 8px;
+    }
+</style>
 
-{% if query %}
-    <h3>검색 결과</h3>
-    {% for user in users %}
-    <div style="border: 1px solid #dbdbdb; padding: 10px; margin: 10px 0; background: white;">
-        <a href="{% url 'users:profile' user.username %}">
-            {% if user.profile_image %}
-            <img src="{{ user.profile_image.url }}" style="width: 50px; height: 50px; border-radius: 50%;">
-            {% endif %}
-            <strong>{{ user.username }}</strong>
-        </a>
-        <p>{{ user.first_name }} {{ user.last_name }}</p>
+<div class="search-container">
+    <div class="search-box">
+        <form method="get">
+            <input type="text" name="q" placeholder="아이디 또는 이름으로 검색..." value="{{ query }}" autofocus>
+            <button type="submit" style="width: 100%; margin-top: 12px;">검색</button>
+        </form>
     </div>
-    {% empty %}
-    <p>검색 결과가 없습니다.</p>
-    {% endfor %}
-{% endif %}
+    
+    {% if query %}
+        <h3 style="margin-bottom: 16px; font-size: 16px; font-weight: 600;">검색 결과</h3>
+        
+        {% for user in users %}
+        <a href="{% url 'users:profile' user.username %}" style="text-decoration: none;">
+            <div class="user-item">
+                {% if user.profile_image %}
+                <img src="{{ user.profile_image.url }}" class="user-avatar" alt="{{ user.username }}">
+                {% else %}
+                <div class="user-avatar-placeholder">👤</div>
+                {% endif %}
+                
+                <div class="user-info">
+                    <strong>{{ user.username }}</strong>
+                    {% if user.first_name or user.last_name %}
+                    <span>{{ user.first_name }} {{ user.last_name }}</span>
+                    {% endif %}
+                </div>
+            </div>
+        </a>
+        {% empty %}
+        <div class="empty-search">
+            <h3 style="font-size: 20px; margin-bottom: 12px;">검색 결과 없음</h3>
+            <p style="color: #8e8e8e; font-size: 14px;">"{{ query }}"와(과) 일치하는 사용자를 찾을 수 없습니다.</p>
+        </div>
+        {% endfor %}
+    {% else %}
+        <div class="empty-search">
+            <h3 style="font-size: 20px; margin-bottom: 12px;">🔍 사용자 검색</h3>
+            <p style="color: #8e8e8e; font-size: 14px;">아이디 또는 이름을 입력하여 친구를 찾아보세요!</p>
+        </div>
+    {% endif %}
+</div>
 {% endblock %}

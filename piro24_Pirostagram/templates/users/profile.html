@@ -1,38 +1,157 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div style="border: 1px solid #dbdbdb; background: white; padding: 20px;">
-    {% if profile_user.profile_image %}
-    <img src="{{ profile_user.profile_image.url }}" style="width: 150px; height: 150px; border-radius: 50%;">
-    {% endif %}
-    
-    <h2>{{ profile_user.username }}</h2>
-    <p>{{ profile_user.first_name }} {{ profile_user.last_name }}</p>
-    <p>{{ profile_user.bio }}</p>
-    
-    <div style="margin: 20px 0;">
-        <strong>게시글 {{ profile_user.posts_count }}</strong> | 
-        <strong>팔로워 {{ profile_user.followers_count }}</strong> | 
-        <strong>팔로잉 {{ profile_user.following_count }}</strong>
+<style>
+    .profile-header {
+        display: grid;
+        grid-template-columns: 150px 1fr;
+        gap: 40px;
+        padding: 40px 0;
+        border-bottom: 1px solid #dbdbdb;
+        margin-bottom: 40px;
+    }
+    .profile-pic {
+        width: 150px;
+        height: 150px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 1px solid #dbdbdb;
+    }
+    .profile-pic-placeholder {
+        width: 150px;
+        height: 150px;
+        border-radius: 50%;
+        background: #dbdbdb;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 64px;
+        color: #fff;
+    }
+    .profile-info h2 {
+        font-size: 28px;
+        font-weight: 300;
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        gap: 20px;
+    }
+    .profile-stats {
+        display: flex;
+        gap: 40px;
+        margin-bottom: 20px;
+        font-size: 16px;
+    }
+    .profile-stats span {
+        font-weight: 600;
+    }
+    .profile-bio {
+        font-size: 14px;
+        line-height: 1.5;
+    }
+    .profile-bio strong {
+        display: block;
+        margin-bottom: 4px;
+    }
+    .posts-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 28px;
+    }
+    .post-thumbnail {
+        aspect-ratio: 1;
+        overflow: hidden;
+        background: #fafafa;
+        border-radius: 4px;
+    }
+    .post-thumbnail img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.2s;
+    }
+    .post-thumbnail:hover img {
+        transform: scale(1.05);
+    }
+    .empty-posts {
+        text-align: center;
+        padding: 60px 20px;
+        grid-column: 1 / -1;
+    }
+    @media (max-width: 768px) {
+        .profile-header {
+            grid-template-columns: 77px 1fr;
+            gap: 28px;
+        }
+        .profile-pic, .profile-pic-placeholder {
+            width: 77px;
+            height: 77px;
+        }
+        .profile-info h2 {
+            font-size: 20px;
+        }
+        .profile-stats {
+            gap: 20px;
+            font-size: 14px;
+        }
+        .posts-grid {
+            gap: 3px;
+        }
+    }
+</style>
+
+<div style="max-width: 935px; margin: 0 auto;">
+    <div class="profile-header">
+        <div>
+            {% if profile_user.profile_image %}
+            <img src="{{ profile_user.profile_image.url }}" class="profile-pic" alt="{{ profile_user.username }}">
+            {% else %}
+            <div class="profile-pic-placeholder">👤</div>
+            {% endif %}
+        </div>
+        
+        <div class="profile-info">
+            <h2>
+                {{ profile_user.username }}
+                {% if is_own_profile %}
+                    <a href="{% url 'users:profile_edit' profile_user.username %}" class="btn btn-secondary" style="font-size: 14px; padding: 6px 12px;">프로필 편집</a>
+                {% else %}
+                    <a href="{% url 'users:follow_toggle' profile_user.username %}" class="btn {% if is_following %}btn-secondary{% endif %}" style="font-size: 14px; padding: 6px 12px;">
+                        {% if is_following %}팔로잉{% else %}팔로우{% endif %}
+                    </a>
+                {% endif %}
+            </h2>
+            
+            <div class="profile-stats">
+                <div>게시물 <span>{{ profile_user.posts_count }}</span></div>
+                <div>팔로워 <span>{{ profile_user.followers_count }}</span></div>
+                <div>팔로우 <span>{{ profile_user.following_count }}</span></div>
+            </div>
+            
+            <div class="profile-bio">
+                {% if profile_user.first_name or profile_user.last_name %}
+                <strong>{{ profile_user.first_name }} {{ profile_user.last_name }}</strong>
+                {% endif %}
+                {% if profile_user.bio %}
+                <p>{{ profile_user.bio }}</p>
+                {% endif %}
+            </div>
+        </div>
     </div>
     
-    {% if is_own_profile %}
-        <a href="{% url 'users:profile_edit' profile_user.username %}">프로필 편집</a>
-    {% else %}
-        <a href="{% url 'users:follow_toggle' profile_user.username %}">
-            {% if is_following %}언팔로우{% else %}팔로우{% endif %}
+    <div class="posts-grid">
+        {% for post in posts %}
+        <a href="{% url 'posts:detail' post.pk %}" class="post-thumbnail">
+            {% if post.image %}
+            <img src="{{ post.image.url }}" alt="게시글">
+            {% endif %}
         </a>
-    {% endif %}
-</div>
-
-<h3 style="margin-top: 30px;">게시글</h3>
-<div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;">
-    {% for post in posts %}
-    <a href="{% url 'posts:detail' post.pk %}">
-        <img src="{{ post.image.url }}" style="width: 100%; aspect-ratio: 1;">
-    </a>
-    {% empty %}
-    <p>게시글이 없습니다.</p>
-    {% endfor %}
+        {% empty %}
+        <div class="empty-posts">
+            <h3 style="font-size: 24px; margin-bottom: 12px;">게시물 없음</h3>
+            <p style="color: #8e8e8e;">{% if is_own_profile %}사진을 공유하면 회원님의 프로필에 표시됩니다.{% else %}아직 게시물이 없습니다.{% endif %}</p>
+        </div>
+        {% endfor %}
+    </div>
 </div>
 {% endblock %}

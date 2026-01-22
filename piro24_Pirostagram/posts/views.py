@@ -9,14 +9,22 @@ from .forms import PostForm, CommentForm
 # 게시글 목록 (피드) - 팔로우한 사람들의 게시글만
 @login_required
 def post_list(request):
+    from stories.models import Story
+    
     # 내가 팔로우한 사람들의 게시글 + 내 게시글
     following_users = request.user.following.all()
     posts = Post.objects.filter(
         Q(author__in=following_users) | Q(author=request.user)
     ).distinct().order_by('-created_at')
     
+    # 스토리도 가져오기
+    stories = Story.objects.filter(
+        Q(author__in=following_users) | Q(author=request.user)
+    ).distinct().order_by('-created_at')
+    
     context = {
         'posts': posts,
+        'stories': stories,
     }
     return render(request, 'posts/list.html', context)
 
