@@ -5,182 +5,75 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}AI Studio{% endblock %}</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-        }
-        .navbar {
-            background: rgba(255, 255, 255, 0.95);
-            padding: 15px 30px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-        .navbar h1 {
-            color: #667eea;
-            font-size: 24px;
-        }
-        .user-info {
-            color: #555;
-        }
-        .user-info a {
-            color: #667eea;
-            text-decoration: none;
-            margin-left: 15px;
-            font-weight: bold;
-        }
-        .tabs {
-            background: rgba(255, 255, 255, 0.9);
-            margin: 20px auto;
-            max-width: 1200px;
-            border-radius: 15px;
-            overflow: hidden;
-            display: flex;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
-        }
-        .tab {
-            flex: 1;
-            padding: 20px;
-            text-align: center;
-            background: white;
-            border: none;
-            cursor: pointer;
-            font-size: 16px;
-            font-weight: bold;
-            color: #666;
-            text-decoration: none;
-            display: block;
-            transition: all 0.3s;
-        }
-        .tab:hover {
-            background: #f0f0f0;
-        }
-        .tab.active {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-        }
-        .container {
-            max-width: 1200px;
-            margin: 30px auto;
-            padding: 40px;
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-        }
-        .messages {
-            background: #fee;
-            border: 1px solid #fcc;
-            color: #c33;
-            padding: 15px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-        }
-        .messages.success {
-            background: #efe;
-            border-color: #cfc;
-            color: #3c3;
-        }
-        h2 {
-            color: #333;
-            margin-bottom: 30px;
-            text-align: center;
-        }
-        .form-group {
-            margin-bottom: 20px;
-        }
-        label {
-            display: block;
-            margin-bottom: 8px;
-            color: #555;
-            font-weight: 500;
-        }
-        input[type="file"] {
-            width: 100%;
-            padding: 12px;
-            border: 2px dashed #ddd;
-            border-radius: 10px;
-            cursor: pointer;
-        }
-        .btn {
-            padding: 15px 40px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            border-radius: 10px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: transform 0.2s;
-        }
-        .btn:hover {
-            transform: translateY(-2px);
-        }
-        .result-box {
-            margin-top: 30px;
-            padding: 20px;
-            background: #f8f9fa;
-            border-radius: 10px;
-            border-left: 5px solid #667eea;
-        }
-        .loading {
-            display: none;
-            text-align: center;
-            margin-top: 20px;
-            color: #667eea;
-            font-weight: bold;
-        }
+        body { background: #e0e0e0; color: #000; margin: 0; padding: 0; }
+        a { text-decoration: none; color: #000; }
+        
+        /* 레이아웃 공통 */
+        .wrap { max-width: 1000px; margin: 0 auto; background: #fff; }
+        
+        /* 네비게이션 */
+        .navbar { padding: 15px; border-bottom: 2px solid #000; display: flex; justify-content: space-between; align-items: center; }
+        .navbar h1 { font-size: 20px; margin: 0; }
+        .user-info a { margin-left: 10px; text-decoration: underline; font-size: 14px; }
+
+        /* 탭 메뉴 */
+        .tabs { display: flex; border-bottom: 2px solid #000; background: #ccc; }
+        .tab { flex: 1; padding: 15px; text-align: center; color: #000; border-right: 1px solid #000; font-weight: bold; }
+        .tab:last-child { border-right: none; }
+        .tab:hover { background: #fff; }
+        .tab.active { background: #000; color: #fff; }
+
+        /* 메인 컨텐츠 */
+        .container { padding: 30px; min-height: 500px; }
+        h2 { border-bottom: 1px solid #000; padding-bottom: 10px; margin-bottom: 20px; }
+        
+        /* 알림 메시지 */
+        .messages { background: #eee; border: 1px solid #000; padding: 10px; margin-bottom: 20px; font-size: 13px; }
+
+        /* 폼 요소 */
+        .form-group { margin-bottom: 15px; }
+        label { display: block; font-weight: bold; margin-bottom: 5px; }
+        input[type="file"], input[type="text"] { width: 100%; padding: 10px; border: 1px solid #000; }
+        .btn { padding: 10px 20px; background: #000; color: #fff; border: 0; cursor: pointer; font-weight: bold; margin-top: 10px; }
+        .result-box { margin-top: 30px; padding: 15px; border: 1px solid #000; background: #f4f4f4; }
+        .loading { display: none; margin-top: 20px; font-weight: bold; }
     </style>
     {% block extra_css %}{% endblock %}
 </head>
 <body>
-    <nav class="navbar">
-        <h1>🤖 AI Studio</h1>
-        <div class="user-info">
-            {% if user.is_authenticated %}
-                <span>{{ user.username }}님 환영합니다!</span>
-                <a href="{% url 'accounts:logout' %}">로그아웃</a>
-            {% else %}
-                <a href="{% url 'accounts:login' %}">로그인</a>
-                <a href="{% url 'accounts:register' %}">회원가입</a>
-            {% endif %}
+    <div class="wrap">
+        <nav class="navbar">
+            <h1>AI Studio</h1>
+            <div class="user-info">
+                {% if user.is_authenticated %}
+                    <span>{{ user.username }}님</span>
+                    <a href="{% url 'accounts:logout' %}">로그아웃</a>
+                {% else %}
+                    <a href="{% url 'accounts:login' %}">로그인</a>
+                    <a href="{% url 'accounts:register' %}">회원가입</a>
+                {% endif %}
+            </div>
+        </nav>
+
+        <div class="tabs">
+            <a href="{% url 'ai_models:home' %}" class="tab {% if request.path == '/' %}active{% endif %}">홈</a>
+            <a href="{% url 'ai_models:image_caption' %}" class="tab {% if 'image-caption' in request.path %}active{% endif %}">이미지 캡셔닝</a>
+            <a href="#" onclick="checkLogin('{% url 'ai_models:speech_to_text' %}')" class="tab {% if 'speech-to-text' in request.path %}active{% endif %}">음성→텍스트</a>
+            <a href="#" onclick="checkLogin('{% url 'ai_models:audio_genre' %}')" class="tab {% if 'audio-genre' in request.path %}active{% endif %}">음악 장르 분류</a>
+            <a href="#" onclick="checkLogin('{% url 'ai_models:podcast_maker' %}')" class="tab {% if 'podcast-maker' in request.path %}active{% endif %}">팟캐스트 메이커</a>
         </div>
-    </nav>
 
-    <div class="tabs">
-        <a href="{% url 'ai_models:home' %}" class="tab {% if request.path == '/' %}active{% endif %}">
-            🏠 홈
-        </a>
-        <a href="{% url 'ai_models:image_caption' %}" class="tab {% if 'image-caption' in request.path %}active{% endif %}">
-            🖼️ 이미지 캡셔닝
-        </a>
-        <a href="#" onclick="checkLogin('{% url 'ai_models:speech_to_text' %}')" class="tab {% if 'speech-to-text' in request.path %}active{% endif %}">
-            🎤 음성→텍스트
-        </a>
-        <a href="#" onclick="checkLogin('{% url 'ai_models:audio_genre' %}')" class="tab {% if 'audio-genre' in request.path %}active{% endif %}">
-            🎵 음악 장르 분류
-        </a>
-        <a href="#" onclick="checkLogin('{% url 'ai_models:podcast_maker' %}')" class="tab {% if 'podcast-maker' in request.path %}active{% endif %}">
-            🎙️ 팟캐스트 메이커
-        </a>
-    </div>
+        <div class="container">
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="messages">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
 
-    <div class="container">
-        {% if messages %}
-            {% for message in messages %}
-                <div class="messages {% if message.tags %}{{ message.tags }}{% endif %}">
-                    {{ message }}
-                </div>
-            {% endfor %}
-        {% endif %}
-
-        {% block content %}{% endblock %}
+            {% block content %}{% endblock %}
+            
+            <div class="loading">처리 중입니다...</div>
+        </div>
     </div>
 
     <script>
@@ -193,15 +86,11 @@
             {% endif %}
         }
 
-        // 폼 제출 시 로딩 표시
         document.addEventListener('DOMContentLoaded', function() {
-            const forms = document.querySelectorAll('form');
-            forms.forEach(form => {
+            document.querySelectorAll('form').forEach(form => {
                 form.addEventListener('submit', function() {
                     const loading = document.querySelector('.loading');
-                    if (loading) {
-                        loading.style.display = 'block';
-                    }
+                    if (loading) loading.style.display = 'block';
                 });
             });
         });

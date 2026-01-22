@@ -1,59 +1,53 @@
 {% extends 'ai_models/base.html' %}
 
-{% block title %}음성→텍스트 - AI Studio{% endblock %}
+{% block title %}음성 텍스트 변환{% endblock %}
 
 {% block content %}
-<h2>🎤 음성→텍스트 변환</h2>
-<p style="text-align: center; color: #666; margin-bottom: 30px;">
-    음성 파일을 업로드하면 AI가 자동으로 텍스트로 변환합니다
-</p>
+<h2>음성 텍스트 변환</h2>
+<p>음성 파일을 업로드하면 텍스트로 변환됩니다.</p>
 
 <form method="post" enctype="multipart/form-data">
     {% csrf_token %}
+    <label for="audio">음성 파일 (MP3, WAV, M4A)</label>
+    <input type="file" id="audio" name="audio" accept="audio/*" required>
     
-    <div class="form-group">
-        <label for="audio">음성 파일 선택 (MP3, WAV, M4A)</label>
-        <input type="file" id="audio" name="audio" accept="audio/*" required>
-    </div>
-    
-    <div style="text-align: center;">
-        <button type="submit" class="btn">🚀 텍스트로 변환하기</button>
-    </div>
-    
-    <div class="loading">⏳ AI가 음성을 분석하고 있습니다... (최대 30초 소요)</div>
+    <button type="submit" class="btn">변환하기</button>
+    <div class="loading">분석 중... (최대 30초)</div>
 </form>
 
 {% if result %}
 <div class="result-box">
-    <h3 style="margin-bottom: 15px;">📝 변환된 텍스트</h3>
-    <div style="background: white; padding: 20px; border-radius: 8px; border-left: 4px solid #667eea; line-height: 1.8;">
-        {{ result }}
-    </div>
-    
-    <div style="margin-top: 20px; text-align: right;">
-        <button onclick="copyText()" class="btn" style="padding: 10px 20px; font-size: 14px;">
-            📋 텍스트 복사
-        </button>
-    </div>
+    <h3>변환 결과</h3>
+    <div id="res-text" class="text-content">{{ result }}</div>
+    <button onclick="copyText()" class="btn sm">복사</button>
 </div>
 {% endif %}
 
-<div style="margin-top: 40px; padding: 20px; background: #fff3e0; border-radius: 10px;">
-    <h4 style="color: #e65100; margin-bottom: 10px;">💡 사용 팁</h4>
-    <ul style="color: #555; line-height: 1.8;">
-        <li>깨끗한 음질일수록 정확도가 높아집니다</li>
-        <li>한국어, 영어 등 다양한 언어를 지원합니다</li>
-        <li>모델: OpenAI Whisper-Small (다국어 음성 인식)</li>
-        <li>파일 크기: 최대 10MB 권장</li>
+<div class="tips">
+    <h4>사용 팁</h4>
+    <ul>
+        <li>깨끗한 음질 권장</li>
+        <li>모델: OpenAI Whisper-Small</li>
+        <li>10MB 이하 권장</li>
     </ul>
 </div>
 
+<style>
+    label { display: block; font-weight: bold; font-size: 14px; margin-bottom: 5px; }
+    input[type="file"] { width: 100%; border: 1px solid #000; padding: 5px; margin-bottom: 10px; }
+    .btn { background: #000; color: #fff; border: 0; padding: 10px 20px; cursor: pointer; }
+    .btn.sm { padding: 5px 10px; margin-top: 5px; font-size: 12px; }
+    .loading { display: none; margin-top: 10px; font-size: 13px; }
+    .result-box { margin-top: 30px; border-top: 2px solid #000; padding-top: 20px; }
+    .text-content { background: #eee; padding: 10px; border: 1px solid #000; font-size: 14px; white-space: pre-wrap; }
+    .tips { margin-top: 30px; border-top: 1px solid #000; padding-top: 10px; font-size: 13px; }
+    .tips ul { padding-left: 20px; margin-top: 5px; }
+</style>
+
 <script>
 function copyText() {
-    const text = document.querySelector('.result-box div').innerText;
-    navigator.clipboard.writeText(text).then(() => {
-        alert('텍스트가 클립보드에 복사되었습니다!');
-    });
+    const text = document.getElementById('res-text').innerText;
+    navigator.clipboard.writeText(text).then(() => alert('복사 완료'));
 }
 </script>
 {% endblock %}

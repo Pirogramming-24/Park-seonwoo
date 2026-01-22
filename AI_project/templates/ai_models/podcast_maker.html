@@ -1,87 +1,69 @@
 {% extends 'ai_models/base.html' %}
 
-{% block title %}팟캐스트 메이커 - AI Studio{% endblock %}
+{% block title %}팟캐스트 메이커{% endblock %}
 
 {% block content %}
-<h2>🎙️ AI 팟캐스트 메이커</h2>
-<p style="text-align: center; color: #666; margin-bottom: 10px;">
-    음성 파일 하나로 텍스트 변환 → 요약 → 썸네일 이미지까지!
-</p>
-<p style="text-align: center; color: #ff6b6b; font-weight: bold; margin-bottom: 30px;">
-    ⚡ 복합 AI 모델 체인 (4단계 파이프라인)
-</p>
+<h2>팟캐스트 메이커</h2>
+<p>음성 파일을 업로드하면 텍스트 변환, 요약, 이미지 프롬프트를 생성합니다.</p>
 
 <form method="post" enctype="multipart/form-data">
     {% csrf_token %}
-    
     <div class="form-group">
-        <label for="audio">팟캐스트 음성 파일 선택 (MP3, WAV, M4A)</label>
+        <label for="audio">음성 파일 (MP3, WAV, M4A)</label>
         <input type="file" id="audio" name="audio" accept="audio/*" required>
-        <small style="color: #999;">💡 강의, 인터뷰, 대담 등 다양한 음성을 시도해보세요</small>
     </div>
     
-    <div style="text-align: center;">
-        <button type="submit" class="btn">🚀 팟캐스트 제작 시작!</button>
-    </div>
-    
-    <div class="loading">
-        ⏳ AI가 작업 중입니다...<br>
-        <small>1️⃣ 음성→텍스트 변환 → 2️⃣ 핵심 내용 요약 → 3️⃣ 썸네일 이미지 생성</small>
-    </div>
+    <button type="submit" class="btn">실행</button>
+    <div class="loading">처리 중... (변환 → 요약 → 생성)</div>
 </form>
 
 {% if transcript or summary or prompt %}
-<div class="result-box" style="background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); border: none; padding: 30px;">
-    
+<div class="result-container">
     {% if transcript %}
-    <div style="background: white; padding: 20px; border-radius: 10px; margin-bottom: 20px;">
-        <h3 style="color: #667eea; margin-bottom: 15px;">📝 1단계: 전체 텍스트</h3>
-        <div style="max-height: 200px; overflow-y: auto; line-height: 1.8; color: #333; background: #f8f9fa; padding: 15px; border-radius: 8px;">
-            {{ transcript }}
-        </div>
+    <div>
+        <h3>1. 전체 텍스트</h3>
+        <div class="box scroll">{{ transcript }}</div>
     </div>
     {% endif %}
     
     {% if summary %}
-    <div style="background: white; padding: 20px; border-radius: 10px; margin-bottom: 20px;">
-        <h3 style="color: #667eea; margin-bottom: 15px;">✨ 2단계: 핵심 요약</h3>
-        <p style="font-size: 16px; line-height: 1.8; color: #333; background: #fffbea; padding: 15px; border-radius: 8px; border-left: 4px solid #ffc107;">
-            {{ summary }}
-        </p>
+    <div>
+        <h3>2. 핵심 요약</h3>
+        <div class="box">{{ summary }}</div>
     </div>
     {% endif %}
     
     {% if prompt %}
-    <div style="background: white; padding: 20px; border-radius: 10px;">
-        <h3 style="color: #667eea; margin-bottom: 15px;">🎨 3단계: 이미지 프롬프트</h3>
-        <p style="font-size: 16px; line-height: 1.8; color: #333; background: #f0f4ff; padding: 15px; border-radius: 8px; border-left: 4px solid #667eea;">
-            {{ prompt }}
-        </p>
-        <p style="margin-top: 10px; color: #999; font-size: 14px;">
-            💡 이 프롬프트를 DALL-E나 Midjourney에 사용해보세요!
-        </p>
+    <div>
+        <h3>3. 이미지 프롬프트</h3>
+        <div class="box">{{ prompt }}</div>
     </div>
     {% endif %}
 </div>
 {% endif %}
 
-<div style="margin-top: 40px; padding: 20px; background: #e8f5e9; border-radius: 10px;">
-    <h4 style="color: #2e7d32; margin-bottom: 10px;">🚀 파이프라인 구조</h4>
-    <ol style="color: #555; line-height: 2;">
-        <li><strong>Whisper (음성→텍스트)</strong>: 음성을 텍스트로 변환</li>
-        <li><strong>BART (요약)</strong>: 긴 텍스트를 핵심만 추출</li>
-        <li><strong>GPT-2 (프롬프트 생성)</strong>: 요약 기반 이미지 프롬프트 자동 생성</li>
-    </ol>
-    <p style="color: #666; margin-top: 15px;">
-        💡 총 3개의 AI 모델이 연결된 복합 파이프라인입니다!
-    </p>
+<div class="info">
+    <h4>파이프라인 구조</h4>
+    <ul>
+        <li>Whisper: 음성 텍스트 변환</li>
+        <li>BART: 내용 요약</li>
+        <li>GPT-2: 프롬프트 생성</li>
+    </ul>
 </div>
 
-<script>
-function regenerate() {
-    if (confirm('같은 음성으로 새로운 스타일의 이미지를 생성할까요?')) {
-        document.querySelector('form').submit();
-    }
-}
-</script>
+<style>
+    .form-group { margin-bottom: 10px; }
+    label { display: block; font-weight: bold; font-size: 14px; }
+    input[type="file"] { border: 1px solid #000; width: 100%; padding: 5px; margin-top: 5px; }
+    .btn { background: #000; color: #fff; border: 0; padding: 8px 20px; cursor: pointer; margin-top: 10px; }
+    .loading { display: none; margin-top: 10px; font-size: 13px; }
+    
+    .result-container { margin-top: 30px; border-top: 2px solid #000; padding-top: 20px; }
+    h3 { font-size: 16px; margin: 0 0 5px 0; }
+    .box { border: 1px solid #000; padding: 10px; margin-bottom: 20px; font-size: 13px; white-space: pre-wrap; background: #fff; }
+    .scroll { max-height: 150px; overflow-y: auto; background: #f9f9f9; }
+    
+    .info { margin-top: 30px; font-size: 12px; border-top: 1px solid #000; padding-top: 10px; }
+    .info ul { padding-left: 20px; margin-top: 5px; }
+</style>
 {% endblock %}

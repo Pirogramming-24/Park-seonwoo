@@ -1,65 +1,57 @@
 {% extends 'ai_models/base.html' %}
 
-{% block title %}음악 장르 분류 - AI Studio{% endblock %}
+{% block title %}음악 장르 분류{% endblock %}
 
 {% block content %}
-<h2>🎵 음악 장르 분류</h2>
-<p style="text-align: center; color: #666; margin-bottom: 30px;">
-    음악 파일을 업로드하면 AI가 자동으로 장르를 분석합니다
-</p>
+<h2>음악 장르 분류</h2>
+<p>음악 파일을 업로드하면 AI가 장르를 분석합니다</p>
 
 <form method="post" enctype="multipart/form-data">
     {% csrf_token %}
-    
     <div class="form-group">
-        <label for="audio">음악 파일 선택 (MP3, WAV, M4A)</label>
+        <label for="audio">음악 파일 (MP3, WAV, M4A)</label>
         <input type="file" id="audio" name="audio" accept="audio/*" required>
     </div>
-    
-    <div style="text-align: center;">
-        <button type="submit" class="btn">🚀 장르 분석하기</button>
-    </div>
-    
-    <div class="loading">⏳ AI가 음악을 분석하고 있습니다...</div>
+    <button type="submit" class="btn">분석하기</button>
+    <div class="loading">분석 중...</div>
 </form>
 
 {% if result %}
 <div class="result-box">
-    <h3 style="margin-bottom: 20px;">🎼 분석 결과</h3>
-    
+    <h3>분석 결과</h3>
     {% for item in result|slice:":5" %}
-    <div style="margin-bottom: 15px;">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
-            <span style="font-weight: bold; color: #333;">{{ item.label }}</span>
-            <span style="color: #667eea; font-weight: bold;">{{ item.score|floatformat:2 }}%</span>
-        </div>
-        <div style="background: #f0f0f0; height: 10px; border-radius: 5px; overflow: hidden;">
-            <div style="background: linear-gradient(90deg, #667eea, #764ba2); height: 100%; width: {{ item.score|floatformat:0 }}%; transition: width 0.5s;"></div>
+    <div style="margin-bottom: 10px;">
+        <div>{{ item.label }}: <span class="score-val" data-score="{{ item.score }}"></span></div>
+        <div style="border: 1px solid #000; height: 10px; width: 100%; margin-top: 2px;">
+            <div class="score-bar" style="background: #000; height: 100%; width: 0%;"></div>
         </div>
     </div>
     {% endfor %}
 </div>
 {% endif %}
 
-<div style="margin-top: 40px; padding: 20px; background: #f3e5f5; border-radius: 10px;">
-    <h4 style="color: #7b1fa2; margin-bottom: 10px;">💡 사용 팁</h4>
-    <ul style="color: #555; line-height: 1.8;">
-        <li>다양한 악기와 보컬이 포함된 음악일수록 정확합니다</li>
-        <li>Rock, Jazz, Classical, Electronic 등 다양한 장르 인식</li>
+<div style="margin-top: 30px; border-top: 1px solid #000; padding-top: 10px;">
+    <h4>사용 팁</h4>
+    <ul style="padding-left: 20px;">
+        <li>다양한 악기와 보컬이 포함될수록 정확함</li>
+        <li>Rock, Jazz, Classical, Electronic 등 인식</li>
         <li>모델: MIT Audio Spectrogram Transformer</li>
-        <li>파일 길이: 10초 이상 권장</li>
+        <li>권장 길이: 10초 이상</li>
     </ul>
 </div>
 {% endblock %}
 
 {% block extra_js %}
 <script>
-// 퍼센트 변환
 document.addEventListener('DOMContentLoaded', function() {
-    const scores = document.querySelectorAll('.result-box span[style*="color: #667eea"]');
-    scores.forEach(score => {
-        const value = parseFloat(score.textContent);
-        score.textContent = (value * 100).toFixed(1) + '%';
+    const vals = document.querySelectorAll('.score-val');
+    const bars = document.querySelectorAll('.score-bar');
+    
+    vals.forEach((el, i) => {
+        const score = parseFloat(el.dataset.score) * 100; // 0.x -> xx% 변환
+        const percent = score.toFixed(1) + '%';
+        el.textContent = percent;
+        bars[i].style.width = percent;
     });
 });
 </script>

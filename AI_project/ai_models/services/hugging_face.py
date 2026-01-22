@@ -25,7 +25,7 @@ class HuggingFaceService:
     def _get_image_caption_pipeline(cls):
         """이미지 캡셔닝 파이프라인 로드"""
         if cls._image_caption_pipeline is None:
-            print("📥 이미지 캡셔닝 모델 로딩 중...")
+            print("이미지 캡셔닝 모델 로딩 중...")
             cls._image_caption_pipeline = pipeline(
                 "image-to-text",
                 model="Salesforce/blip-image-captioning-base",
@@ -37,7 +37,7 @@ class HuggingFaceService:
     def _get_speech_to_text_pipeline(cls):
         """음성→텍스트 파이프라인 로드"""
         if cls._speech_to_text_pipeline is None:
-            print("📥 음성 인식 모델 로딩 중...")
+            print("음성 인식 모델 로딩 중...")
             cls._speech_to_text_pipeline = pipeline(
                 "automatic-speech-recognition",
                 model="openai/whisper-tiny",  # tiny: 빠름, small: 정확
@@ -49,7 +49,7 @@ class HuggingFaceService:
     def _get_audio_classification_pipeline(cls):
         """음악 장르 분류 파이프라인 로드"""
         if cls._audio_classification_pipeline is None:
-            print("📥 음악 분류 모델 로딩 중...")
+            print("음악 분류 모델 로딩 중...")
             cls._audio_classification_pipeline = pipeline(
                 "audio-classification",
                 model="MIT/ast-finetuned-audioset-10-10-0.4593",
@@ -61,7 +61,7 @@ class HuggingFaceService:
     def _get_summarization_pipeline(cls):
         """텍스트 요약 파이프라인 로드"""
         if cls._summarization_pipeline is None:
-            print("📥 요약 모델 로딩 중...")
+            print("요약 모델 로딩 중...")
             cls._summarization_pipeline = pipeline(
                 "summarization",
                 model="facebook/bart-large-cnn",
@@ -73,7 +73,7 @@ class HuggingFaceService:
     def _get_text_generation_pipeline(cls):
         """텍스트 생성 파이프라인 로드"""
         if cls._text_generation_pipeline is None:
-            print("📥 텍스트 생성 모델 로딩 중...")
+            print("텍스트 생성 모델 로딩 중...")
             cls._text_generation_pipeline = pipeline(
                 "text-generation",
                 model="gpt2",
@@ -298,7 +298,7 @@ class HuggingFaceService:
         }
         
         # 1단계: 음성 → 텍스트
-        print("🎤 1단계: 음성→텍스트 변환 중...")
+        print("1단계: 음성→텍스트 변환 중...")
         step1 = HuggingFaceService.audio_to_text(audio_bytes)
         if not step1['success']:
             result['error'] = step1['error']
@@ -308,7 +308,7 @@ class HuggingFaceService:
         result['transcript'] = step1['text']
         
         # 2단계: 텍스트 요약
-        print("📝 2단계: 텍스트 요약 중...")
+        print("2단계: 텍스트 요약 중...")
         step2 = HuggingFaceService.summarize_text(step1['text'])
         if not step2['success']:
             result['error'] = step2['error']
@@ -318,11 +318,11 @@ class HuggingFaceService:
         result['summary'] = step2['summary']
         
         # 3단계: 프롬프트 생성
-        print("🎨 3단계: 이미지 프롬프트 생성 중...")
+        print("3단계: 이미지 프롬프트 생성 중...")
         step3 = HuggingFaceService.generate_image_prompt(step2['summary'])
         result['prompt'] = step3['prompt']
         
         result['success'] = True
-        print("✅ 팟캐스트 생성 완료!")
+        print("팟캐스트 생성 완료!")
         
         return result
