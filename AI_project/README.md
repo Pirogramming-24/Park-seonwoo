@@ -38,6 +38,7 @@ Django와 Hugging Face Transformers를 활용하여 이미지, 음성, 텍스트
 - **접근 권한**: 로그인 필요
 - 실행 화면 예시:
 -->!![alt text](image-2.png)
+    ![alt text](image-3.png)
 
 ### 4. 챌린지 - 복합 AI 파이프라인 (팟캐스트 메이커)
 - **사용 모델**: 
@@ -51,7 +52,7 @@ Django와 Hugging Face Transformers를 활용하여 이미지, 음성, 텍스트
   - AI 생성 이미지 프롬프트
 - **접근 권한**: 로그인 필요
 - 실행 화면 예시:
--->!![alt text](image-3.png)
+-->!![alt text](image-5.png)
 ![alt text](image-4.png)
 ---
 
