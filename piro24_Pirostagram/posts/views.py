@@ -6,18 +6,30 @@ from .models import Post, Comment
 from .forms import PostForm, CommentForm
 
 
-# 게시글 목록 (피드) - 팔로우한 사람들의 게시글만
+# 게시글 목록
 @login_required
 def post_list(request):
     from stories.models import Story
     
-    # 내가 팔로우한 사람들의 게시글 + 내 게시글
+    # 기본: 내가 팔로우한 사람 + 내 게시글
     following_users = request.user.following.all()
     posts = Post.objects.filter(
         Q(author__in=following_users) | Q(author=request.user)
-    ).distinct().order_by('-created_at')
+    )
     
-    # 스토리도 가져오기
+    # 검색 기능 구현
+    query = request.GET.get('q')
+    if query:
+        # 내용(content)에 검색어가 포함되어 있거나, 작성자 이름에 포함된 경우
+        posts = posts.filter(
+            Q(content__icontains=query) | 
+            Q(author__username__icontains=query)
+        )
+    
+    # 정렬 (최신순) & 중복 제거
+    posts = posts.distinct().order_by('-created_at')
+    
+    # 스토리 로직
     stories = Story.objects.filter(
         Q(author__in=following_users) | Q(author=request.user)
     ).distinct().order_by('-created_at')
@@ -25,6 +37,7 @@ def post_list(request):
     context = {
         'posts': posts,
         'stories': stories,
+        'query': query, # 검색어를 템플릿에도 전달 (검색창에 유지하려고)
     }
     return render(request, 'posts/list.html', context)
 

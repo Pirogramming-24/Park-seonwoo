@@ -73,6 +73,17 @@
 
 <div style="max-width: 614px; margin: 0 auto;">
     <!-- 스토리 섹션 -->
+     <div class="card" style="padding: 12px; margin-bottom: 24px; display: flex; justify-content: center;">
+        <form action="" method="GET" style="width: 100%; display: flex; gap: 8px;">
+            <input type="text" name="q" value="{{ query|default:'' }}" 
+                   placeholder="검색 (내용, 작성자)" 
+                   style="flex: 1; padding: 8px 12px; background: #fafafa; border: 1px solid #dbdbdb; border-radius: 4px;">
+            <button type="submit" 
+                    style="padding: 8px 16px; background: #0095f6; color: white; border: none; border-radius: 4px; font-weight: 600; cursor: pointer;">
+                검색
+            </button>
+        </form>
+    </div>
     <div class="card" style="padding: 16px; margin-bottom: 24px;">
         <div style="display: flex; gap: 16px; overflow-x: auto; padding-bottom: 8px;">
             <a href="{% url 'stories:create' %}" style="text-align: center; min-width: 64px;">
@@ -124,9 +135,9 @@
         {% endif %}
         
         <div class="post-actions">
-            <a href="{% url 'posts:like' post.pk %}">
-                <button>{% if user in post.likes.all %}❤️{% else %}🤍{% endif %}</button>
-            </a>
+            <button id="like-btn-{{ post.pk }}" onclick="likePost({{ post.pk }})" style="background:none; border:none; cursor:pointer; font-size:24px;">
+                {% if user in post.likes.all %}❤️{% else %}🤍{% endif %}
+            </button>   
             <a href="{% url 'posts:detail' post.pk %}">
                 <button>💬</button>
             </a>
@@ -156,4 +167,24 @@
     </div>
     {% endfor %}
 </div>
+<script>
+    function likePost(postId) {
+        fetch(`/posts/${postId}/like/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}',
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            const btn = document.getElementById(`like-btn-${postId}`);
+            btn.innerText = data.liked ? '❤️' : '🤍';
+            
+            const likeCountDiv = btn.closest('.post-card').querySelector('.post-likes');
+            if(likeCountDiv) likeCountDiv.innerText = `좋아요 ${data.likes_count}개`;
+        })
+        .catch(error => console.error('Error:', error));
+    }
+</script>
 {% endblock %}
