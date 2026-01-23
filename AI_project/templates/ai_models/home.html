@@ -1,0 +1,70 @@
+{% extends 'ai_models/base.html' %}
+
+{% block title %}AI Studio - 홈{% endblock %}
+
+{% block content %}
+<style>
+    .hero { text-align: center; padding: 40px 0; border-bottom: 2px solid #000; margin-bottom: 30px; }
+    .hero h1 { font-size: 28px; margin-bottom: 10px; color: #000; }
+    .hero p { color: #333; margin-bottom: 20px; }
+    .alert { border: 1px solid #000; padding: 10px; display: inline-block; font-size: 13px; background: #eee; }
+    
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; }
+    .card { border: 1px solid #000; padding: 20px; cursor: pointer; background: #fff; }
+    .card:hover { background: #000; color: #fff; }
+    .card:hover h3, .card:hover p, .card:hover .status { color: #fff; }
+    
+    .card h3 { margin-bottom: 10px; font-size: 18px; border-bottom: 1px solid #000; padding-bottom: 5px; }
+    .card:hover h3 { border-color: #fff; }
+    .card p { font-size: 13px; color: #555; margin-bottom: 15px; }
+    .status { font-size: 12px; font-weight: bold; }
+    
+    .locked { background: #e0e0e0; color: #555; }
+</style>
+
+<div class="hero">
+    <h1>AI Studio</h1>
+    <p>다양한 AI 모델 체험</p>
+    
+    {% if not user.is_authenticated %}
+        <div class="alert">
+            모든 기능 사용을 위해 <a href="{% url 'accounts:login' %}" style="font-weight: bold; text-decoration: underline;">로그인</a>이 필요합니다.
+        </div>
+    {% endif %}
+</div>
+
+<div class="grid">
+    <div class="card" onclick="location.href='{% url 'ai_models:image_caption' %}'">
+        <h3>이미지 캡셔닝</h3>
+        <p>이미지 설명 자동 생성</p>
+        <span class="status">사용 가능</span>
+    </div>
+
+    <div class="card {% if not user.is_authenticated %}locked{% endif %}" 
+         onclick="checkLogin('{% url 'ai_models:speech_to_text' %}')">
+        <h3>음성 텍스트 변환</h3>
+        <p>음성 파일을 텍스트로 변환</p>
+        <span class="status">
+            {% if user.is_authenticated %}사용 가능{% else %}로그인 필요{% endif %}
+        </span>
+    </div>
+
+    <div class="card {% if not user.is_authenticated %}locked{% endif %}" 
+         onclick="checkLogin('{% url 'ai_models:audio_genre' %}')">
+        <h3>음악 장르 분류</h3>
+        <p>음악 파일 장르 분석</p>
+        <span class="status">
+            {% if user.is_authenticated %}사용 가능{% else %}로그인 필요{% endif %}
+        </span>
+    </div>
+
+    <div class="card {% if not user.is_authenticated %}locked{% endif %}" 
+         onclick="checkLogin('{% url 'ai_models:podcast_maker' %}')">
+        <h3>팟캐스트 메이커</h3>
+        <p>텍스트 변환 및 요약</p>
+        <span class="status">
+            {% if user.is_authenticated %}사용 가능{% else %}로그인 필요{% endif %}
+        </span>
+    </div>
+</div>
+{% endblock %}

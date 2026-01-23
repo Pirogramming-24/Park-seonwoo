@@ -1,0 +1,41 @@
+{% extends 'ai_models/base.html' %}
+
+{% block title %}이미지 캡셔닝{% endblock %}
+
+{% block content %}
+<h2>이미지 캡셔닝</h2>
+<p>이미지를 업로드하면 설명이 생성됩니다.</p>
+
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div class="form-group">
+        <label for="image">이미지 파일 (JPG, PNG)</label>
+        <input type="file" id="image" name="image" accept="image/*" required>
+    </div>
+    
+    <button type="submit" class="btn">캡션 생성</button>
+    <div class="loading">분석 중...</div>
+</form>
+
+{% if image_url %}
+<div class="result-box">
+    <h3>업로드 이미지</h3>
+    <img src="{{ image_url }}" alt="Uploaded" style="max-width: 100%; border: 1px solid #000;">
+    
+    {% if result %}
+    <h3 style="margin-top: 20px;">분석 결과</h3>
+    <div style="background: #eee; padding: 10px; border: 1px solid #000; font-weight: bold;">
+        {{ result }}
+    </div>
+    {% endif %}
+</div>
+{% endif %}
+
+<div style="margin-top: 30px; border-top: 1px solid #000; padding-top: 10px;">
+    <h4>사용 팁</h4>
+    <ul style="padding-left: 20px; font-size: 13px;">
+        <li>명확한 이미지일수록 정확함</li>
+        <li>모델: Salesforce BLIP</li>
+    </ul>
+</div>
+{% endblock %}

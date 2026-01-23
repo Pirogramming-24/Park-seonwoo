@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Pirostagram{% endblock %}</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background: #fafafa;
+            color: #262626;
+        }
+        
+        /* 네비게이션 */
+        nav {
+            background: white;
+            border-bottom: 1px solid #dbdbdb;
+            padding: 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .nav-container {
+            max-width: 975px;
+            margin: 0 auto;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .nav-logo {
+            font-size: 28px;
+            font-weight: bold;
+            text-decoration: none;
+            color: #262626;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+        
+        .nav-links a {
+            text-decoration: none;
+            color: #262626;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .nav-links a:hover {
+            color: #8e8e8e;
+        }
+        
+        /* 컨테이너 */
+        .container {
+            max-width: 935px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+        
+        /* 메시지 */
+        .messages {
+            max-width: 935px;
+            margin: 20px auto;
+            padding: 0 20px;
+        }
+        
+        .message {
+            padding: 12px 16px;
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            border-radius: 4px;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+        
+        /* 버튼 */
+        button, .btn {
+            background: #0095f6;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        button:hover, .btn:hover {
+            background: #0081d8;
+        }
+        
+        .btn-secondary {
+            background: #efefef;
+            color: #262626;
+        }
+        
+        .btn-secondary:hover {
+            background: #dbdbdb;
+        }
+        
+        /* 폼 */
+        input[type="text"],
+        input[type="password"],
+        input[type="email"],
+        textarea {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #dbdbdb;
+            border-radius: 4px;
+            font-size: 14px;
+            background: #fafafa;
+            margin-bottom: 8px;
+        }
+        
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: #8e8e8e;
+            background: white;
+        }
+        
+        /* 카드 */
+        .card {
+            background: white;
+            border: 1px solid #dbdbdb;
+            border-radius: 8px;
+            margin-bottom: 24px;
+        }
+        
+        /* 링크 */
+        a {
+            color: #0095f6;
+            text-decoration: none;
+        }
+        
+        a:hover {
+            color: #00376b;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-container">
+            <a href="{% url 'posts:list' %}" class="nav-logo">Pirostagram</a>
+            
+            <div class="nav-links">
+                {% if user.is_authenticated %}
+                    <a href="{% url 'posts:list' %}">🏠 홈</a>
+                    <a href="{% url 'users:search' %}">🔍 검색</a>
+                    <a href="{% url 'posts:create' %}">➕ 만들기</a>
+                    <a href="{% url 'users:profile' user.username %}">👤 프로필</a>
+                    <a href="{% url 'users:logout' %}">로그아웃</a>
+                {% else %}
+                    <a href="{% url 'users:login' %}">로그인</a>
+                    <a href="{% url 'users:signup' %}">회원가입</a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    {% if messages %}
+    <div class="messages">
+        {% for message in messages %}
+            <div class="message">{{ message }}</div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <div class="container">
+        {% block content %}{% endblock %}
+    </div>
+</body>
+</html>

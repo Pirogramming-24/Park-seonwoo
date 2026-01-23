@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}AI Studio{% endblock %}</title>
+    <style>
+        body { background: #e0e0e0; color: #000; margin: 0; padding: 0; }
+        a { text-decoration: none; color: #000; }
+        
+        /* 레이아웃 공통 */
+        .wrap { max-width: 1000px; margin: 0 auto; background: #fff; }
+        
+        /* 네비게이션 */
+        .navbar { padding: 15px; border-bottom: 2px solid #000; display: flex; justify-content: space-between; align-items: center; }
+        .navbar h1 { font-size: 20px; margin: 0; }
+        .user-info a { margin-left: 10px; text-decoration: underline; font-size: 14px; }
+
+        /* 탭 메뉴 */
+        .tabs { display: flex; border-bottom: 2px solid #000; background: #ccc; }
+        .tab { flex: 1; padding: 15px; text-align: center; color: #000; border-right: 1px solid #000; font-weight: bold; }
+        .tab:last-child { border-right: none; }
+        .tab:hover { background: #fff; }
+        .tab.active { background: #000; color: #fff; }
+
+        /* 메인 컨텐츠 */
+        .container { padding: 30px; min-height: 500px; }
+        h2 { border-bottom: 1px solid #000; padding-bottom: 10px; margin-bottom: 20px; }
+        
+        /* 알림 메시지 */
+        .messages { background: #eee; border: 1px solid #000; padding: 10px; margin-bottom: 20px; font-size: 13px; }
+
+        /* 폼 요소 */
+        .form-group { margin-bottom: 15px; }
+        label { display: block; font-weight: bold; margin-bottom: 5px; }
+        input[type="file"], input[type="text"] { width: 100%; padding: 10px; border: 1px solid #000; }
+        .btn { padding: 10px 20px; background: #000; color: #fff; border: 0; cursor: pointer; font-weight: bold; margin-top: 10px; }
+        .result-box { margin-top: 30px; padding: 15px; border: 1px solid #000; background: #f4f4f4; }
+        .loading { display: none; margin-top: 20px; font-weight: bold; }
+    </style>
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <div class="wrap">
+        <nav class="navbar">
+            <h1>AI Studio</h1>
+            <div class="user-info">
+                {% if user.is_authenticated %}
+                    <span>{{ user.username }}님</span>
+                    <a href="{% url 'accounts:logout' %}">로그아웃</a>
+                {% else %}
+                    <a href="{% url 'accounts:login' %}">로그인</a>
+                    <a href="{% url 'accounts:register' %}">회원가입</a>
+                {% endif %}
+            </div>
+        </nav>
+
+        <div class="tabs">
+            <a href="{% url 'ai_models:home' %}" class="tab {% if request.path == '/' %}active{% endif %}">홈</a>
+            <a href="{% url 'ai_models:image_caption' %}" class="tab {% if 'image-caption' in request.path %}active{% endif %}">이미지 캡셔닝</a>
+            <a href="#" onclick="checkLogin('{% url 'ai_models:speech_to_text' %}')" class="tab {% if 'speech-to-text' in request.path %}active{% endif %}">음성→텍스트</a>
+            <a href="#" onclick="checkLogin('{% url 'ai_models:audio_genre' %}')" class="tab {% if 'audio-genre' in request.path %}active{% endif %}">음악 장르 분류</a>
+            <a href="#" onclick="checkLogin('{% url 'ai_models:podcast_maker' %}')" class="tab {% if 'podcast-maker' in request.path %}active{% endif %}">팟캐스트 메이커</a>
+        </div>
+
+        <div class="container">
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="messages">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+
+            {% block content %}{% endblock %}
+            
+            <div class="loading">처리 중입니다...</div>
+        </div>
+    </div>
+
+    <script>
+        function checkLogin(url) {
+            {% if not user.is_authenticated %}
+                alert('로그인 후 이용해주세요');
+                window.location.href = '{% url "accounts:login" %}?next=' + url;
+            {% else %}
+                window.location.href = url;
+            {% endif %}
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('form').forEach(form => {
+                form.addEventListener('submit', function() {
+                    const loading = document.querySelector('.loading');
+                    if (loading) loading.style.display = 'block';
+                });
+            });
+        });
+    </script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

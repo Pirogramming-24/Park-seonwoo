@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+    .form-container {
+        max-width: 600px;
+        margin: 40px auto;
+    }
+    .form-card {
+        background: white;
+        border: 1px solid #dbdbdb;
+        border-radius: 8px;
+        padding: 40px;
+    }
+    .form-card h2 {
+        font-size: 24px;
+        font-weight: 600;
+        margin-bottom: 24px;
+        text-align: center;
+    }
+    .form-group {
+        margin-bottom: 20px;
+    }
+    .form-group label {
+        display: block;
+        font-size: 14px;
+        font-weight: 600;
+        margin-bottom: 8px;
+    }
+    .form-actions {
+        display: flex;
+        gap: 12px;
+        margin-top: 24px;
+    }
+    .form-actions button,
+    .form-actions a {
+        flex: 1;
+        text-align: center;
+    }
+</style>
+
+<div class="form-container">
+    <div class="form-card">
+        <h2>{% if is_update %}게시글 수정{% else %}새 게시물 만들기{% endif %}</h2>
+        
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            
+            <div class="form-group">
+                <label for="id_image">이미지</label>
+                {{ form.image }}
+            </div>
+            
+            <div class="form-group">
+                <label for="id_content">문구 입력</label>
+                {{ form.content }}
+            </div>
+            
+            <div class="form-actions">
+                <a href="{% url 'posts:list' %}" class="btn btn-secondary">취소</a>
+                <button type="submit">{% if is_update %}수정 완료{% else %}공유하기{% endif %}</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,58 @@
+{% extends 'ai_models/base.html' %}
+
+{% block title %}음악 장르 분류{% endblock %}
+
+{% block content %}
+<h2>음악 장르 분류</h2>
+<p>음악 파일을 업로드하면 AI가 장르를 분석합니다</p>
+
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div class="form-group">
+        <label for="audio">음악 파일 (MP3, WAV, M4A)</label>
+        <input type="file" id="audio" name="audio" accept="audio/*" required>
+    </div>
+    <button type="submit" class="btn">분석하기</button>
+    <div class="loading">분석 중...</div>
+</form>
+
+{% if result %}
+<div class="result-box">
+    <h3>분석 결과</h3>
+    {% for item in result|slice:":5" %}
+    <div style="margin-bottom: 10px;">
+        <div>{{ item.label }}: <span class="score-val" data-score="{{ item.score }}"></span></div>
+        <div style="border: 1px solid #000; height: 10px; width: 100%; margin-top: 2px;">
+            <div class="score-bar" style="background: #000; height: 100%; width: 0%;"></div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+<div style="margin-top: 30px; border-top: 1px solid #000; padding-top: 10px;">
+    <h4>사용 팁</h4>
+    <ul style="padding-left: 20px;">
+        <li>다양한 악기와 보컬이 포함될수록 정확함</li>
+        <li>Rock, Jazz, Classical, Electronic 등 인식</li>
+        <li>모델: MIT Audio Spectrogram Transformer</li>
+        <li>권장 길이: 10초 이상</li>
+    </ul>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const vals = document.querySelectorAll('.score-val');
+    const bars = document.querySelectorAll('.score-bar');
+    
+    vals.forEach((el, i) => {
+        const score = parseFloat(el.dataset.score) * 100; // 0.x -> xx% 변환
+        const percent = score.toFixed(1) + '%';
+        el.textContent = percent;
+        bars[i].style.width = percent;
+    });
+});
+</script>
+{% endblock %}

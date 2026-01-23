@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div style="max-width: 350px; margin: 60px auto;">
+    <div class="card" style="padding: 40px;">
+        <h1 style="text-align: center; font-size: 32px; margin-bottom: 10px; font-family: cursive;">Pirostagram</h1>
+        <p style="text-align: center; color: #8e8e8e; font-size: 14px; margin-bottom: 30px;">친구들의 사진과 동영상을 보려면 가입하세요.</p>
+        
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" style="width: 100%; margin-top: 10px;">가입</button>
+        </form>
+    </div>
+    
+    <div class="card" style="padding: 20px; text-align: center; margin-top: 10px;">
+        <span style="font-size: 14px;">계정이 있으신가요? <a href="{% url 'users:login' %}">로그인</a></span>
+    </div>
+</div>
+{% endblock %}

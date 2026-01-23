@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>스토리</h2>
+
+<div style="display: flex; gap: 20px; overflow-x: auto; padding: 20px 0;">
+    {% for story in stories %}
+    <a href="{% url 'stories:view' story.pk %}" style="text-align: center;">
+        {% if story.images.first %}
+        <img src="{{ story.images.first.image.url }}" style="width: 80px; height: 80px; border-radius: 50%; border: 2px solid #e1306c;">
+        {% endif %}
+        <div>{{ story.author.username }}</div>
+    </a>
+    {% empty %}
+    <p>스토리가 없습니다.</p>
+    {% endfor %}
+</div>
+
+<a href="{% url 'posts:list' %}">← 피드로 돌아가기</a>
+{% endblock %}

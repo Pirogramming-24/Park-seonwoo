@@ -1,0 +1,190 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+    .post-card {
+        max-width: 614px;
+        margin: 0 auto 24px;
+    }
+    .post-header {
+        padding: 14px 16px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+    .post-header img {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+    }
+    .post-header strong {
+        font-size: 14px;
+        font-weight: 600;
+    }
+    .post-image {
+        width: 100%;
+        display: block;
+    }
+    .post-actions {
+        padding: 8px 16px;
+    }
+    .post-actions button {
+        background: none;
+        border: none;
+        font-size: 24px;
+        cursor: pointer;
+        padding: 8px;
+    }
+    .post-likes {
+        padding: 0 16px;
+        font-size: 14px;
+        font-weight: 600;
+    }
+    .post-content {
+        padding: 8px 16px;
+        font-size: 14px;
+    }
+    .post-comments {
+        padding: 0 16px 12px;
+    }
+    .post-comments a {
+        font-size: 14px;
+        color: #8e8e8e;
+    }
+    .post-time {
+        padding: 0 16px 12px;
+        font-size: 12px;
+        color: #8e8e8e;
+    }
+    .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+    }
+    .empty-state h2 {
+        font-size: 24px;
+        margin-bottom: 16px;
+    }
+    .empty-state p {
+        color: #8e8e8e;
+        font-size: 14px;
+        margin-bottom: 20px;
+    }
+</style>
+
+<div style="max-width: 614px; margin: 0 auto;">
+    <!-- 스토리 섹션 -->
+     <div class="card" style="padding: 12px; margin-bottom: 24px; display: flex; justify-content: center;">
+        <form action="" method="GET" style="width: 100%; display: flex; gap: 8px;">
+            <input type="text" name="q" value="{{ query|default:'' }}" 
+                   placeholder="검색 (내용, 작성자)" 
+                   style="flex: 1; padding: 8px 12px; background: #fafafa; border: 1px solid #dbdbdb; border-radius: 4px;">
+            <button type="submit" 
+                    style="padding: 8px 16px; background: #0095f6; color: white; border: none; border-radius: 4px; font-weight: 600; cursor: pointer;">
+                검색
+            </button>
+        </form>
+    </div>
+    <div class="card" style="padding: 16px; margin-bottom: 24px;">
+        <div style="display: flex; gap: 16px; overflow-x: auto; padding-bottom: 8px;">
+            <a href="{% url 'stories:create' %}" style="text-align: center; min-width: 64px;">
+                <div style="width: 64px; height: 64px; border-radius: 50%; border: 2px dashed #dbdbdb; display: flex; align-items: center; justify-content: center; font-size: 24px;">
+                    ➕
+                </div>
+                <div style="font-size: 12px; margin-top: 4px; color: #262626;">내 스토리</div>
+            </a>
+            
+            {% comment %} 팔로우한 사람들의 스토리 표시 {% endcomment %}
+            {% for story in stories %}
+            <a href="{% url 'stories:view' story.pk %}" style="text-align: center; min-width: 64px;">
+                {% if story.images.first %}
+                <img src="{{ story.images.first.image.url }}" style="width: 64px; height: 64px; border-radius: 50%; object-fit: cover; border: 3px solid #e1306c;">
+                {% else %}
+                <div style="width: 64px; height: 64px; border-radius: 50%; background: #dbdbdb; border: 3px solid #e1306c;"></div>
+                {% endif %}
+                <div style="font-size: 12px; margin-top: 4px; color: #262626;">{{ story.author.username }}</div>
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- 게시글 피드 -->
+    {% for post in posts %}
+    <div class="card post-card">
+        <div class="post-header">
+            <a href="{% url 'users:profile' post.author.username %}">
+                {% if post.author.profile_image %}
+                <img src="{{ post.author.profile_image.url }}" alt="{{ post.author.username }}">
+                {% else %}
+                <div style="width: 32px; height: 32px; border-radius: 50%; background: #dbdbdb;"></div>
+                {% endif %}
+            </a>
+            <a href="{% url 'users:profile' post.author.username %}" style="color: #262626;">
+                <strong>{{ post.author.username }}</strong>
+            </a>
+            
+            {% if post.author == user %}
+            <div style="margin-left: auto; display: flex; gap: 8px;">
+                <a href="{% url 'posts:update' post.pk %}" style="font-size: 12px;">수정</a>
+                <a href="{% url 'posts:delete' post.pk %}" onclick="return confirm('삭제하시겠습니까?')" style="font-size: 12px; color: #ed4956;">삭제</a>
+            </div>
+            {% endif %}
+        </div>
+        
+        {% if post.image %}
+        <img src="{{ post.image.url }}" class="post-image" alt="게시글 이미지">
+        {% endif %}
+        
+        <div class="post-actions">
+            <button id="like-btn-{{ post.pk }}" onclick="likePost({{ post.pk }})" style="background:none; border:none; cursor:pointer; font-size:24px;">
+                {% if user in post.likes.all %}❤️{% else %}🤍{% endif %}
+            </button>   
+            <a href="{% url 'posts:detail' post.pk %}">
+                <button>💬</button>
+            </a>
+        </div>
+        
+        <div class="post-likes">
+            좋아요 {{ post.likes_count }}개
+        </div>
+        
+        <div class="post-content">
+            <strong>{{ post.author.username }}</strong> {{ post.content }}
+        </div>
+        
+        <div class="post-comments">
+            <a href="{% url 'posts:detail' post.pk %}">댓글 {{ post.comments_count }}개 모두 보기</a>
+        </div>
+        
+        <div class="post-time">
+            {{ post.created_at|date:"Y년 m월 d일" }}
+        </div>
+    </div>
+    {% empty %}
+    <div class="card empty-state">
+        <h2>환영합니다! 👋</h2>
+        <p>팔로우한 사람이 없거나 게시글이 없습니다.</p>
+        <a href="{% url 'users:search' %}" class="btn">친구 찾기</a>
+    </div>
+    {% endfor %}
+</div>
+<script>
+    function likePost(postId) {
+        fetch(`/posts/${postId}/like/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}',
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            const btn = document.getElementById(`like-btn-${postId}`);
+            btn.innerText = data.liked ? '❤️' : '🤍';
+            
+            const likeCountDiv = btn.closest('.post-card').querySelector('.post-likes');
+            if(likeCountDiv) likeCountDiv.innerText = `좋아요 ${data.likes_count}개`;
+        })
+        .catch(error => console.error('Error:', error));
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>로그인</title>
+    <style>
+        body { background: #e0e0e0; color: #000; }
+        .login-container { width: 400px; margin: 50px auto; background: #fff; padding: 20px; }
+        h2 { border-bottom: 1px solid #000; margin-bottom: 20px; padding-bottom: 10px; font-size: 20px; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; font-weight: bold; font-size: 14px; }
+        input { width: 100%; padding: 5px; margin-top: 5px; box-sizing: border-box; }
+        .btn { width: 100%; padding: 10px; background: #000; color: #fff; border: 0; cursor: pointer; margin-top: 10px; }
+        .messages { background: #ccc; padding: 10px; margin-bottom: 20px; font-size: 13px; }
+        .register-link { margin-top: 20px; font-size: 13px; border-top: 1px solid #000; padding-top: 10px; }
+        a { color: #000; text-decoration: underline; }
+        .helptext { display: none; }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <h2>AI Studio 로그인</h2>
+        
+        {% if messages %}
+            {% for message in messages %}
+                <div class="messages">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+
+        <form method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="id_username">아이디</label>
+                {{ form.username }}
+            </div>
+            <div class="form-group">
+                <label for="id_password">비밀번호</label>
+                {{ form.password }}
+            </div>
+            <button type="submit" class="btn">로그인</button>
+        </form>
+        
+        <div class="register-link">
+            계정이 없으신가요? <a href="{% url 'accounts:register' %}">회원가입</a>
+        </div>
+    </div>
+
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.has('next')) alert('로그인 후 이용해주세요');
+    </script>
+</body>
+</html>
